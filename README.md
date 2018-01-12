@@ -1,53 +1,37 @@
 Installation
 ============
 
-Applications that use Symfony Flex
-----------------------------------
 
 Open a command console, enter your project directory and execute:
 
-```console
+```bash
 $ composer require sonofwinter/binding-bundle
 ```
 
-Applications that don't use Symfony Flex
-----------------------------------------
+Usage
+=====
 
-### Step 1: Download the Bundle
+Define binding properties in your entity
 
-Open a command console, enter your project directory and execute the
-following command to download the latest stable version of this bundle:
-
-```console
-$ composer require sonofwinter/binding-bundle "~1"
-```
-
-This command requires you to have Composer installed globally, as explained
-in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
-of the Composer documentation.
-
-### Step 2: Enable the Bundle
-
-Then, enable the bundle by adding it to the list of registered bundles
-in the `app/AppKernel.php` file of your project:
 
 ```php
-<?php
-// app/AppKernel.php
+    /**
+     * @var string
+     * @Binding(name="firstname")
+     */
+    private $firstname;
+    
 
-// ...
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
-            new SOW\BindingBundle\SOWBindingBundle(),
-        );
-
-        // ...
-    }
-
-    // ...
-}
+    /**
+     * @var string
+     * @Binding(name="lastname", setter="setOtherName")
+     */
+    private $lastname;
 ```
+
+Use Binder service for bind an array to entity
+
+```php
+$bindingService->bind($object, $array);
+```
+
