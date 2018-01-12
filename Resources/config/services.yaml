@@ -1,0 +1,15 @@
+parameters:
+    binding.annotation.class: SOW\BindingBundle\Annotation\Binding
+
+services:
+    SOW\BindingBundle\Loader\AnnotationClassLoader:
+        alias: sow_binding.annotation_class_loader
+        arguments:
+            - "@annotations.reader"
+
+    SOW\BindingBundle\Binder:
+        alias: sow_binding.binder
+        public: true
+        arguments:
+            - "@sow_binding.annotation_class_loader"
+            - "@logger"
