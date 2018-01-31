@@ -2,7 +2,6 @@
 
 namespace SOW\BindingBundle\Loader;
 
-use Composer\Autoload\ClassLoader;
 use SOW\BindingBundle\Binding;
 use SOW\BindingBundle\BindingCollection;
 use Symfony\Component\Config\Loader\LoaderInterface;
