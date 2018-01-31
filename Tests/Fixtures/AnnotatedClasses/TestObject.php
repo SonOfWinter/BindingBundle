@@ -1,6 +1,6 @@
 <?php
 
-namespace SOW\BindingBundle\Tests;
+namespace SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses;
 
 use SOW\BindingBundle\Annotation as Binding;
 
@@ -9,7 +9,7 @@ use SOW\BindingBundle\Annotation as Binding;
  * @package SOW\BindingBundle\Tests\Service
  * @codeCoverageIgnore
  */
-class Fake
+class TestObject extends AbstractClass
 {
     /**
      * @var string

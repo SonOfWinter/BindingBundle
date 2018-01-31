@@ -5,9 +5,10 @@ namespace SOW\BindingBundle\Tests;
 use Doctrine\Common\Annotations\AnnotationReader;
 use SOW\BindingBundle\Binder;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
+use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
-class BindingServiceTest extends TestCase
+class FunctionalTest extends TestCase
 {
     public function testGetCorrespondenceArrayWithFakeObject()
     {
@@ -15,13 +16,13 @@ class BindingServiceTest extends TestCase
             'lastname'  => 'Bullock',
             'firstname' => 'Ryan'
         ];
-        $fakeObject = new Fake();
+        $testObject = new TestObject();
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader);
         $bindingService = new Binder($loader);
-        $bindingService->bind($fakeObject, $rightFakeArray);
-        $this->assertEquals($rightFakeArray['lastname'], $fakeObject->getLastname());
-        $this->assertEquals($rightFakeArray['firstname'], $fakeObject->getFirstname());
-        $this->assertEquals(null, $fakeObject->getNotBindProperty());
+        $bindingService->bind($testObject, $rightFakeArray);
+        $this->assertEquals($rightFakeArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($rightFakeArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals(null, $testObject->getNotBindProperty());
     }
 }
