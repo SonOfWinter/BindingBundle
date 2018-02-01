@@ -77,10 +77,11 @@ class Binder implements BinderInterface
         }
         $collection = $this->getBindingCollection();
         foreach ($collection as $binding) {
-            if (array_key_exists($binding->getKey(), $params))
-            $method = $binding->getSetter();
-            $value = $params[$binding->getKey()];
-            $object->$method($value);
+            if (array_key_exists($binding->getKey(), $params)) {
+                $method = $binding->getSetter();
+                $value = $params[$binding->getKey()];
+                $object->$method($value);
+            }
         }
     }
 }
