@@ -7,13 +7,12 @@ use SOW\BindingBundle\Binder;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
-use Symfony\Component\Config\Resource\FileResource;
 
 class BinderTest extends TestCase
 {
-    public function testBinder()
+    public function testBinderWithAllProperties()
     {
-        $rightFakeArray = [
+        $dataArray = [
             'lastname'  => 'Bullock',
             'firstname' => 'Ryan'
         ];
@@ -21,9 +20,24 @@ class BinderTest extends TestCase
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader);
         $bindingService = new Binder($loader);
-        $bindingService->bind($testObject, $rightFakeArray);
-        $this->assertEquals($rightFakeArray['lastname'], $testObject->getLastname());
-        $this->assertEquals($rightFakeArray['firstname'], $testObject->getFirstname());
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals(null, $testObject->getNotBindProperty());
+    }
+
+    public function testBinderWithOneProperty()
+    {
+        $dataArray = [
+            'lastname'  => 'Bullock'
+        ];
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader);
+        $bindingService = new Binder($loader);
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals(null, $testObject->getFirstname());
         $this->assertEquals(null, $testObject->getNotBindProperty());
     }
 

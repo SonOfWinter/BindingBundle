@@ -31,7 +31,7 @@ class TestObject extends AbstractClass
     /**
      * @return string
      */
-    public function getFirstname(): string
+    public function getFirstname()
     {
         return $this->firstname;
     }
@@ -47,7 +47,7 @@ class TestObject extends AbstractClass
     /**
      * @return string
      */
-    public function getLastname(): string
+    public function getLastname()
     {
         return $this->lastname;
     }
