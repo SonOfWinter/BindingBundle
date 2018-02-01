@@ -40,6 +40,7 @@ class AnnotationClassLoader implements LoaderInterface
      * @param null  $type
      * @return BindingCollection
      * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function load($class, $type = null)
     {
