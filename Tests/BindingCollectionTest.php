@@ -6,7 +6,6 @@ use SOW\BindingBundle\Binding;
 use SOW\BindingBundle\BindingCollection;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\Config\Resource\FileResource;
-use Symfony\Component\Config\Resource\ResourceInterface;
 
 class BindingCollectionTest extends TestCase
 {
