@@ -21,7 +21,7 @@
     "require": {
         "php": ">=7.1",
         "symfony/framework-bundle": "^4.0",
-        "symfony/orm-pack": "^1.0",
+        "symfony/orm-pack": "*",
         "symfony/dependency-injection": "^4.0"
     },
     "require-dev": {
