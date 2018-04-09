@@ -32,6 +32,16 @@ Define binding properties in your entity
 Use Binder service for bind an array to entity
 
 ```php
-$bindingService->bind($object, $array);
+    public function __construct(Binder $binder)
+    {
+        $this->binder = $binder;
+    }
+
+    function bind(BindaleEntity $be, array $data): BindableEntity
+    {
+        // $data = ['lastname' => 'Doe', 'firstname' => 'John' ];
+        $this->binder->bind($be, $data);
+        return $be;
+    }
 ```
 

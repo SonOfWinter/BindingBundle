@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="sow_binding.annotation_class_loader" class="SOW\BindingBundle\Loader\AnnotationClassLoader" public="false">
+            <argument type="service" id="annotation_reader" />
+        </service>
+        <service id="sow_binding.binder" class="SOW\BindingBundle\Binder" public="true">
+            <argument type="service" id="sow_binding.annotation_class_loader" />
+            <argument type="service" id="logger" />
+        </service>
+    </services>
+</container>
