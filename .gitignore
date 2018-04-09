@@ -4,6 +4,5 @@
 composer.lock
 symfony.lock
 /bin
-###> phpunit/phpunit ###
+.phpunit
 /phpunit.xml
-###< phpunit/phpunit ###
