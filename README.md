@@ -32,7 +32,7 @@ Define binding properties in your entity
 Use Binder service for bind an array to entity
 
 ```php
-    public function __construct(Binder $binder)
+    public function __construct(BinderInterface $binder)
     {
         $this->binder = $binder;
     }
