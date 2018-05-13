@@ -15,20 +15,31 @@ class BindingTest extends TestCase
         $route = new Binding(array('foo' => 'bar'));
     }
 
+    public function testValidNameSetterAndTypeParameter()
+    {
+        $binding = new Binding(array('name' => 'test', 'setter' => 'getTest', 'type' => 'string'));
+        $this->assertTrue($binding instanceof Binding);
+        $this->assertEquals('test', $binding->getName());
+        $this->assertEquals('getTest', $binding->getSetter());
+        $this->assertEquals('string', $binding->getType());
+    }
+
     public function testValidNameAndSetterParameter()
     {
         $binding = new Binding(array('name' => 'test', 'setter' => 'getTest'));
         $this->assertTrue($binding instanceof Binding);
         $this->assertEquals('test', $binding->getName());
         $this->assertEquals('getTest', $binding->getSetter());
+        $this->assertNull($binding->getType());
     }
 
-    public function testIncompliteValidNameParameter()
+    public function testValidNameParameter()
     {
         $binding = new Binding(array('name' => 'test'));
         $this->assertTrue($binding instanceof Binding);
         $this->assertEquals('test', $binding->getName());
         $this->assertNull($binding->getSetter());
+        $this->assertNull($binding->getType());
     }
 
 }

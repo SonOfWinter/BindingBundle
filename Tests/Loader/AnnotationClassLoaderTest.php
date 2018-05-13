@@ -76,6 +76,12 @@ class AnnotationClassLoaderTest extends TestCase
         $this->assertEquals(2, $collection->count());
     }
 
+    public function testLoadTypedClass()
+    {
+        $collection = $this->loader->load('SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject');
+        $this->assertEquals(3, $collection->count());
+    }
+
     public function testSupportsChecksTypeIfSpecified()
     {
         $this->assertTrue($this->loader->supports('class', 'annotation'));
