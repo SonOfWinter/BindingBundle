@@ -17,6 +17,8 @@ class Binding
 
     public $setter;
 
+    public $type;
+
     /**
      * @param array $data An array of key/value parameters
      *
@@ -35,18 +37,22 @@ class Binding
 
     /**
      * @param string $name
+     * @return Binding
      */
-    public function setName(string $name): void
+    public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
-     * @param mixed $setter
+     * @param $setter
+     * @return Binding
      */
-    public function setSetter($setter): void
+    public function setSetter($setter): self
     {
         $this->setter = $setter;
+        return $this;
     }
 
     /**
@@ -64,4 +70,23 @@ class Binding
     {
         return $this->setter;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     * @return self
+     */
+    public function setType($type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
 }

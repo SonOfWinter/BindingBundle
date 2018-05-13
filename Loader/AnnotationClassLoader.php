@@ -58,7 +58,6 @@ class AnnotationClassLoader implements LoaderInterface
             $methods[] = $reflectionMethod->getName();
         }
         foreach ($class->getProperties() as $property) {
-
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
                 if ($annot instanceof $this->bindingAnnotationClass) {
                     $this->addBinding($collection, $annot, $methods, $class, $property);
@@ -82,9 +81,9 @@ class AnnotationClassLoader implements LoaderInterface
                                   \ReflectionProperty $property)
     {
         $propertyName = $property->getName();
-        $method = $annot->getSetter() ?: 'set' . ucfirst($propertyName);
+        $method = $annot->getSetter() ?? 'set' . ucfirst($propertyName);
         if (in_array($method, $methods)) {
-            $binding = new Binding($annot->getName(), $method);
+            $binding = new Binding($annot->getName(), $method, $annot->getType());
             $collection->add($binding);
         }
     }

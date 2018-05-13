@@ -5,22 +5,28 @@ namespace SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses;
 use SOW\BindingBundle\Annotation as Binding;
 
 /**
- * Class TestObject
+ * Class TestTypedObject
  * @package SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses
  */
-class TestObject extends AbstractClass
+class TestTypedObject extends AbstractClass
 {
     /**
      * @var string
-     * @Binding\Binding(name="firstname")
+     * @Binding\Binding(name="firstname", type="string")
      */
     private $firstname;
 
     /**
      * @var string
-     * @Binding\Binding(name="lastname", setter="setOtherName")
+     * @Binding\Binding(name="lastname", setter="setOtherName", type="string")
      */
     private $lastname;
+
+    /**
+     * @var integer
+     * @Binding\Binding(name="age", type="integer")
+     */
+    private $age;
 
     /**
      * @var mixed
@@ -73,5 +79,23 @@ class TestObject extends AbstractClass
     public function setNotBindProperty($notBindProperty): void
     {
         $this->notBindProperty = $notBindProperty;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAge()
+    {
+        return $this->age;
+    }
+
+    /**
+     * @param int $age
+     * @return self
+     */
+    public function setAge(int $age): self
+    {
+        $this->age = $age;
+        return $this;
     }
 }

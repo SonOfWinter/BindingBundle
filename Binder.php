@@ -4,6 +4,7 @@ namespace SOW\BindingBundle;
 
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
+use SOW\BindingBundle\Exception\BinderTypeException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\ResourceInterface;
 
@@ -80,6 +81,13 @@ class Binder implements BinderInterface
             if (array_key_exists($binding->getKey(), $params)) {
                 $method = $binding->getSetter();
                 $value = $params[$binding->getKey()];
+                if (!empty($binding->getType())) {
+                    $valueType = gettype($value);
+                    $annotType = $binding->getType();
+                    if ($valueType !== $annotType) {
+                        throw new BinderTypeException($annotType, $valueType);
+                    }
+                }
                 $object->$method($value);
             }
         }

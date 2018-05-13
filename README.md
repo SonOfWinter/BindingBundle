@@ -27,7 +27,17 @@ Define binding properties in your entity
      * @Binding(name="lastname", setter="setOtherName")
      */
     private $lastname;
+
+    /**
+     * @var string
+     * @Binding(name="lastname", type="integer")
+     */
+    private $age;
 ```
+
+You must defined the name property. It's the array value'key
+the setter property is used if you want to use another setter
+the type property is used if you want to make a type check. A BinderTypeException is throws if the type doens't correspond
 
 Use Binder service for bind an array to entity
 
