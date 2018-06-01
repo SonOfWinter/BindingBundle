@@ -6,6 +6,7 @@ use SOW\BindingBundle\Annotation as Binding;
 
 /**
  * Class TestTypedObject
+ *
  * @package SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses
  */
 class TestTypedObject extends AbstractClass
@@ -91,6 +92,7 @@ class TestTypedObject extends AbstractClass
 
     /**
      * @param int $age
+     *
      * @return self
      */
     public function setAge(int $age): self

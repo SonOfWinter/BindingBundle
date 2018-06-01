@@ -20,7 +20,6 @@ Define binding properties in your entity
      * @Binding(name="firstname")
      */
     private $firstname;
-    
 
     /**
      * @var string

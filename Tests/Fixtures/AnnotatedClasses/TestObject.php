@@ -6,6 +6,7 @@ use SOW\BindingBundle\Annotation as Binding;
 
 /**
  * Class TestObject
+ *
  * @package SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses
  */
 class TestObject extends AbstractClass

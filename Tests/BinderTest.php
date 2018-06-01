@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Binder test
+ *
+ * PHP Version 7.1
+ *
+ * @package  SOW\BindingBundle\Tests
+ * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
+ * @link     https://github.com/SonOfWinter/BindingBundle
+ */
+
 namespace SOW\BindingBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -9,6 +19,11 @@ use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
+/**
+ * Class BinderTest
+ *
+ * @package SOW\BindingBundle\Tests
+ */
 class BinderTest extends TestCase
 {
     public function testBinderWithAllProperties()
@@ -21,25 +36,49 @@ class BinderTest extends TestCase
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader);
         $bindingService = new Binder($loader);
-        $bindingService->bind($testObject, $dataArray);
-        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
-        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
-        $this->assertEquals(null, $testObject->getNotBindProperty());
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['firstname'],
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
     }
 
     public function testBinderWithOneProperty()
     {
         $dataArray = [
-            'lastname'  => 'Bullock'
+            'lastname' => 'Bullock'
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader);
         $bindingService = new Binder($loader);
-        $bindingService->bind($testObject, $dataArray);
-        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
-        $this->assertEquals(null, $testObject->getFirstname());
-        $this->assertEquals(null, $testObject->getNotBindProperty());
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
     }
 
     /**
@@ -61,7 +100,10 @@ class BinderTest extends TestCase
         $bindingService = new Binder($loader);
         $bindingService->setResource(get_class($testObject));
         $collection = $bindingService->getBindingCollection();
-        $this->assertEquals($collection, $bindingService->getBindingCollection());
+        $this->assertEquals(
+            $collection,
+            $bindingService->getBindingCollection()
+        );
     }
 
     public function testBinderWithAllTypedProperties()
@@ -69,17 +111,32 @@ class BinderTest extends TestCase
         $dataArray = [
             'lastname'  => 'Bullock',
             'firstname' => 'Ryan',
-            'age' => 24
+            'age'       => 24
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader);
         $bindingService = new Binder($loader);
-        $bindingService->bind($testObject, $dataArray);
-        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
-        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
-        $this->assertEquals($dataArray['age'], $testObject->getAge());
-        $this->assertEquals(null, $testObject->getNotBindProperty());
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['firstname'],
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray['age'],
+            $testObject->getAge()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
     }
 
     /**
@@ -91,12 +148,15 @@ class BinderTest extends TestCase
         $dataArray = [
             'lastname'  => 'Bullock',
             'firstname' => 5.7,
-            'age' => true
+            'age'       => true
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader);
         $bindingService = new Binder($loader);
-        $bindingService->bind($testObject, $dataArray);
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
     }
 }
