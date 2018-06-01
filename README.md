@@ -29,7 +29,7 @@ Define binding properties in your entity
 
     /**
      * @var string
-     * @Binding(name="lastname", type="integer")
+     * @Binding(name="age", type="integer")
      */
     private $age;
 ```
@@ -46,9 +46,9 @@ Use Binder service for bind an array to entity
         $this->binder = $binder;
     }
 
-    function bind(BindaleEntity $be, array $data): BindableEntity
+    function bind(BindableEntity $be, array $data): BindableEntity
     {
-        // $data = ['lastname' => 'Doe', 'firstname' => 'John' ];
+        // $data = ['lastname' => 'Doe', 'firstname' => 'John', 'age' => 20];
         $this->binder->bind($be, $data);
         return $be;
     }
