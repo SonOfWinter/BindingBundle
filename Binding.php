@@ -1,20 +1,37 @@
 <?php
 
+/**
+ * Binding class
+ *
+ * PHP Version 7.1
+ *
+ * @package  SOW\BindingBundle
+ * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
+ * @link     https://github.com/SonOfWinter/BindingBundle
+ */
+
 namespace SOW\BindingBundle;
 
 /**
  * Class Binding
+ *
  * @package SOW\BindingBundle
  */
 class Binding implements \Serializable
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $key = '';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $setter = '';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $type = '';
 
     /**
@@ -53,16 +70,21 @@ class Binding implements \Serializable
     }
 
     /**
+     * Getter for key
+     *
      * @return string
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
 
     /**
+     * Setter for key
+     *
      * @param string $key
-     * @return Binding
+     *
+     * @return self
      */
     public function setKey(string $key): self
     {
@@ -71,16 +93,21 @@ class Binding implements \Serializable
     }
 
     /**
+     * Getter for setter
+     *
      * @return string
      */
-    public function getSetter()
+    public function getSetter(): string
     {
         return $this->setter;
     }
 
     /**
+     * Setter for setter
+     *
      * @param string $setter
-     * @return Binding
+     *
+     * @return self
      */
     public function setSetter(string $setter): self
     {
@@ -89,15 +116,20 @@ class Binding implements \Serializable
     }
 
     /**
+     * Getter for type
+     *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
+     * Setter for type
+     *
      * @param string $type
+     *
      * @return self
      */
     public function setType(string $type): self
@@ -106,6 +138,9 @@ class Binding implements \Serializable
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->getKey();

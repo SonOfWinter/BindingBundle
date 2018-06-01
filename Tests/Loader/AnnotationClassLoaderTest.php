@@ -1,17 +1,36 @@
 <?php
 
+/**
+ * AnnotationClassLoader test
+ *
+ * PHP Version 7.1
+ *
+ * @package  SOW\BindingBundle\Tests\Loader
+ * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
+ * @link     https://github.com/SonOfWinter/BindingBundle
+ */
+
 namespace SOW\BindingBundle\Tests\Loader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 
+/**
+ * Class AnnotationClassLoaderTest
+ *
+ * @package SOW\BindingBundle\Tests\Loader
+ */
 class AnnotationClassLoaderTest extends TestCase
 {
-    /** @var AnnotationReader */
+    /**
+     * @var AnnotationReader
+     */
     private $reader;
 
-    /** @var AnnotationClassLoader */
+    /**
+     * @var AnnotationClassLoader
+     */
     private $loader;
 
     protected function setUp()
@@ -26,30 +45,40 @@ class AnnotationClassLoaderTest extends TestCase
         $reflection = new \ReflectionObject($object);
         $property = $reflection->getProperty($attributeName);
         $property->setAccessible(true);
-        $property->setValue($object, $value);
+        $property->setValue(
+            $object,
+            $value
+        );
     }
 
     public function getReader()
     {
-        return $this->getMockBuilder('Doctrine\Common\Annotations\Reader')->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder('Doctrine\Common\Annotations\Reader')
+            ->disableOriginalConstructor()->getMock();
     }
 
     public function getClassLoader($reader)
     {
-        return $this->getMockBuilder('SOW\BindingBundle\Loader\AnnotationClassLoader')->setConstructorArgs([$reader])
-                    ->getMockForAbstractClass();
+        return $this->getMockBuilder(
+            'SOW\BindingBundle\Loader\AnnotationClassLoader'
+        )->setConstructorArgs([$reader])
+            ->getMockForAbstractClass();
     }
 
     # setBindingAnnotationClass
 
     public function testChangeAnnotationClass()
     {
-        $newClass = 'SOW\\BindingBundle\\Tests\\Fixtures\\AnnotatedClasses\\TestObject';
+        $newClass
+            = 'SOW\\BindingBundle\\Tests\\Fixtures\\AnnotatedClasses\\TestObject';
         $this->loader->setBindingAnnotationClass($newClass);
         $reflection = new \ReflectionObject($this->loader);
         $property = $reflection->getProperty('bindingAnnotationClass');
         $property->setAccessible(true);
-        $this->assertEquals($newClass, $property->getValue($this->loader));
+        $this->assertEquals(
+            $newClass,
+            $property->getValue($this->loader)
+        );
     }
 
     # load
@@ -67,24 +96,46 @@ class AnnotationClassLoaderTest extends TestCase
      */
     public function testLoadAbstractClass()
     {
-        $this->loader->load('SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\AbstractClass');
+        $this->loader->load(
+            'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\AbstractClass'
+        );
     }
 
     public function testLoadClass()
     {
-        $collection = $this->loader->load('SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject');
-        $this->assertEquals(2, $collection->count());
+        $collection = $this->loader->load(
+            'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject'
+        );
+        $this->assertEquals(
+            2,
+            $collection->count()
+        );
     }
 
     public function testLoadTypedClass()
     {
-        $collection = $this->loader->load('SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject');
-        $this->assertEquals(3, $collection->count());
+        $collection = $this->loader->load(
+            'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject'
+        );
+        $this->assertEquals(
+            3,
+            $collection->count()
+        );
     }
 
     public function testSupportsChecksTypeIfSpecified()
     {
-        $this->assertTrue($this->loader->supports('class', 'annotation'));
-        $this->assertFalse($this->loader->supports('class', 'foo'));
+        $this->assertTrue(
+            $this->loader->supports(
+                'class',
+                'annotation'
+            )
+        );
+        $this->assertFalse(
+            $this->loader->supports(
+                'class',
+                'foo'
+            )
+        );
     }
 }

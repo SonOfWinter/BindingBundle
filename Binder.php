@@ -1,15 +1,25 @@
 <?php
 
+/**
+ * Binder class
+ *
+ * PHP Version 7.1
+ *
+ * @package  SOW\BindingBundle
+ * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
+ * @link     https://github.com/SonOfWinter/BindingBundle
+ */
+
 namespace SOW\BindingBundle;
 
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
 use SOW\BindingBundle\Exception\BinderTypeException;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Config\Resource\ResourceInterface;
 
 /**
  * Class Binder
+ *
  * @package SOW\BindingBundle
  */
 class Binder implements BinderInterface
@@ -45,14 +55,20 @@ class Binder implements BinderInterface
         $this->logger = $logger;
     }
 
+    /**
+     * @param $resource
+     *
+     * @return void
+     */
     public function setResource($resource)
     {
         $this->resource = $resource;
     }
 
     /**
+     * @throws BinderConfigurationException
+     *
      * @return null|BindingCollection
-     * @throws \Exception
      */
     public function getBindingCollection()
     {
@@ -67,9 +83,14 @@ class Binder implements BinderInterface
 
     /**
      * bind an array to entity
+     *
      * @param       $object
      * @param array $params
-     * @throws \Exception
+     *
+     * @throws BinderConfigurationException
+     * @throws BinderTypeException
+     *
+     * @return void
      */
     public function bind(&$object, array $params = [])
     {
