@@ -118,9 +118,9 @@ class Binding implements \Serializable
     /**
      * Getter for type
      *
-     * @return string
+     * @return null|string
      */
-    public function getType(): string
+    public function getType()
     {
         return $this->type;
     }
