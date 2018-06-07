@@ -13,13 +13,13 @@ class TestObject extends AbstractClass
 {
     /**
      * @var string
-     * @Binding\Binding(name="firstname")
+     * @Binding\Binding(key="firstname")
      */
     private $firstname;
 
     /**
      * @var string
-     * @Binding\Binding(name="lastname", setter="setOtherName")
+     * @Binding\Binding(key="lastname", setter="setOtherName")
      */
     private $lastname;
 

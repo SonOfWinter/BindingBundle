@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Binding class
+ * Binding Collection class
  *
  * PHP Version 7.1
  *

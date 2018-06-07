@@ -26,6 +26,8 @@ use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
  */
 class BinderTest extends TestCase
 {
+    private $bindingAnnotationClass = 'SOW\\BindingBundle\\Annotation\\Binding';
+
     public function testBinderWithAllProperties()
     {
         $dataArray = [
@@ -34,7 +36,7 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader);
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $bindingService->bind(
             $testObject,
@@ -61,7 +63,7 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader);
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $bindingService->bind(
             $testObject,
@@ -87,7 +89,7 @@ class BinderTest extends TestCase
     public function testGetCollectionWithoutResource()
     {
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader);
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $bindingService->getBindingCollection();
     }
@@ -96,7 +98,7 @@ class BinderTest extends TestCase
     {
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader);
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $bindingService->setResource(get_class($testObject));
         $collection = $bindingService->getBindingCollection();
@@ -115,7 +117,7 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader);
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $bindingService->bind(
             $testObject,
@@ -152,7 +154,7 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader);
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $bindingService->bind(
             $testObject,

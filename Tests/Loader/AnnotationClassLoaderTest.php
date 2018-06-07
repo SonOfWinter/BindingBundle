@@ -15,6 +15,7 @@ namespace SOW\BindingBundle\Tests\Loader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
+use Symfony\Component\Config\Loader\LoaderResolverInterface;
 
 /**
  * Class AnnotationClassLoaderTest
@@ -32,6 +33,8 @@ class AnnotationClassLoaderTest extends TestCase
      * @var AnnotationClassLoader
      */
     private $loader;
+
+    private $bindingAnnotationClass = 'SOW\\BindingBundle\\Annotation\\Binding';
 
     protected function setUp()
     {
@@ -61,7 +64,7 @@ class AnnotationClassLoaderTest extends TestCase
     {
         return $this->getMockBuilder(
             'SOW\BindingBundle\Loader\AnnotationClassLoader'
-        )->setConstructorArgs([$reader])
+        )->setConstructorArgs([$reader, $this->bindingAnnotationClass])
             ->getMockForAbstractClass();
     }
 
@@ -137,5 +140,22 @@ class AnnotationClassLoaderTest extends TestCase
                 'foo'
             )
         );
+    }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testGetResolverDoesNothing()
+    {
+        $this->loader->getResolver();
+    }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testSetResolverDoesNothing()
+    {
+        $lri = $this->createMock(LoaderResolverInterface::class);
+        $this->loader->setResolver($lri);
     }
 }

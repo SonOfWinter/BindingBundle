@@ -24,11 +24,11 @@ namespace SOW\BindingBundle\Annotation;
 class Binding
 {
     /**
-     * Entity property name
+     * Entity property key
      *
      * @var string
      */
-    public $name;
+    public $key;
 
     /**
      * Entity setter method name
@@ -54,12 +54,12 @@ class Binding
     public function __construct(array $data)
     {
         foreach ($data as $key => $value) {
-            $noUnderscroreKey = str_replace(
+            $noUnderscoreKey = str_replace(
                 '_',
                 '',
                 $key
             );
-            $method = 'set' . $noUnderscroreKey;
+            $method = 'set' . $noUnderscoreKey;
             if (!method_exists(
                 $this,
                 $method
@@ -77,25 +77,25 @@ class Binding
     }
 
     /**
-     * Getter for name
+     * Getter for key
      *
      * @return string
      */
-    public function getName(): string
+    public function getKey(): string
     {
-        return $this->name;
+        return $this->key;
     }
 
     /**
-     * Setter for name
+     * Setter for key
      *
-     * @param string $name
+     * @param string $key
      *
      * @return self
      */
-    public function setName(string $name): self
+    public function setKey(string $key): self
     {
-        $this->name = $name;
+        $this->key = $key;
         return $this;
     }
 
