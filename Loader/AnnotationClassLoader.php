@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bundle Extension class
+ * Annotation class loader
  *
  * PHP Version 7.1
  *
@@ -38,16 +38,17 @@ class AnnotationClassLoader implements LoaderInterface
      *
      * @var string
      */
-    protected $bindingAnnotationClass = 'SOW\\BindingBundle\\Annotation\\Binding';
+    protected $bindingAnnotationClass;
 
     /**
      * AnnotationClassLoader constructor.
      *
      * @param Reader $reader
      */
-    public function __construct(Reader $reader)
+    public function __construct(Reader $reader, $bindingAnnotationClass)
     {
         $this->reader = $reader;
+        $this->bindingAnnotationClass = $bindingAnnotationClass;
     }
 
     /**
@@ -136,7 +137,7 @@ class AnnotationClassLoader implements LoaderInterface
         )
         ) {
             $binding = new Binding(
-                $annot->getName(),
+                $annot->getKey(),
                 $method,
                 $annot->getType()
             );

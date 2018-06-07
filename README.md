@@ -13,6 +13,29 @@ Usage
 
 Define binding properties in your entity
 
+For v0.3.0 and above
+
+```php
+    /**
+     * @var string
+     * @Binding(key="firstname")
+     */
+    private $firstname;
+
+    /**
+     * @var string
+     * @Binding(key="lastname", setter="setOtherName")
+     */
+    private $lastname;
+
+    /**
+     * @var string
+     * @Binding(key="age", type="integer")
+     */
+    private $age;
+```
+
+For v0.2.0 and below
 
 ```php
     /**
@@ -34,9 +57,12 @@ Define binding properties in your entity
     private $age;
 ```
 
-You must defined the name property. It's the array value'key
-the setter property is used if you want to use another setter
-the type property is used if you want to make a type check. A BinderTypeException is throws if the type doens't correspond
+You must defined the key|name property. It's the array value's key.
+
+The setter property is used if you want to use another setter.
+
+The type property is used if you want to make a type check.
+A BinderTypeException is throws if the type doens't correspond.
 
 Use Binder service for bind an array to entity
 

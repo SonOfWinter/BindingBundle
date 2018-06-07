@@ -13,19 +13,19 @@ class TestTypedObject extends AbstractClass
 {
     /**
      * @var string
-     * @Binding\Binding(name="firstname", type="string")
+     * @Binding\Binding(key="firstname", type="string")
      */
     private $firstname;
 
     /**
      * @var string
-     * @Binding\Binding(name="lastname", setter="setOtherName", type="string")
+     * @Binding\Binding(key="lastname", setter="setOtherName", type="string")
      */
     private $lastname;
 
     /**
      * @var integer
-     * @Binding\Binding(name="age", type="integer")
+     * @Binding\Binding(key="age", type="integer")
      */
     private $age;
 
