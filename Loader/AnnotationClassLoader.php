@@ -137,7 +137,7 @@ class AnnotationClassLoader implements LoaderInterface
         )
         ) {
             $binding = new Binding(
-                $annot->getKey(),
+                $annot->getKey() ?? $propertyName,
                 $method,
                 $annot->getType()
             );
@@ -170,6 +170,7 @@ class AnnotationClassLoader implements LoaderInterface
      */
     public function getResolver()
     {
+        return;
     }
 
     /**
@@ -181,5 +182,6 @@ class AnnotationClassLoader implements LoaderInterface
      */
     public function setResolver(LoaderResolverInterface $resolver)
     {
+        return;
     }
 }

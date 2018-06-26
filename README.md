@@ -33,6 +33,12 @@ For v0.3.0 and above
      * @Binding(key="age", type="integer")
      */
     private $age;
+
+    /**
+     * @var string
+     * @Binding()
+     */
+    private $userEmail;
 ```
 
 For v0.2.0 and below
@@ -55,6 +61,12 @@ For v0.2.0 and below
      * @Binding(name="age", type="integer")
      */
     private $age;
+
+    /** 
+     * @var string
+     * @Binding(name="userEmail")
+     */
+    private $userEmail;  
 ```
 
 You must defined the key|name property. It's the array value's key.
@@ -74,7 +86,7 @@ Use Binder service for bind an array to entity
 
     function bind(BindableEntity $be, array $data): BindableEntity
     {
-        // $data = ['lastname' => 'Doe', 'firstname' => 'John', 'age' => 20];
+        // $data = ['lastname' => 'Doe', 'firstname' => 'John', 'age' => 20, 'userEmail' => 'some.email@mail.com'];
         $this->binder->bind($be, $data);
         return $be;
     }

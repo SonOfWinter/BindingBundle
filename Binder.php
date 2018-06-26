@@ -67,6 +67,7 @@ class Binder implements BinderInterface
 
     /**
      * @throws BinderConfigurationException
+     * @throws \Exception
      *
      * @return null|BindingCollection
      */

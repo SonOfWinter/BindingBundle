@@ -110,7 +110,7 @@ class AnnotationClassLoaderTest extends TestCase
             'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject'
         );
         $this->assertEquals(
-            2,
+            3,
             $collection->count()
         );
     }
@@ -147,7 +147,7 @@ class AnnotationClassLoaderTest extends TestCase
      */
     public function testGetResolverDoesNothing()
     {
-        $this->loader->getResolver();
+        $this->assertTrue(empty($this->loader->getResolver()));
     }
 
     /**
@@ -156,6 +156,6 @@ class AnnotationClassLoaderTest extends TestCase
     public function testSetResolverDoesNothing()
     {
         $lri = $this->createMock(LoaderResolverInterface::class);
-        $this->loader->setResolver($lri);
+        $this->assertTrue(empty($this->loader->setResolver($lri)));
     }
 }

@@ -79,9 +79,9 @@ class Binding
     /**
      * Getter for key
      *
-     * @return string
+     * @return mixed
      */
-    public function getKey(): string
+    public function getKey()
     {
         return $this->key;
     }

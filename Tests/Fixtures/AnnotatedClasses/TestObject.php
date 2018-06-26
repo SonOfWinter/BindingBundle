@@ -24,6 +24,12 @@ class TestObject extends AbstractClass
     private $lastname;
 
     /**
+     * @var string
+     * @Binding\Binding()
+     */
+    private $userEmail;
+
+    /**
      * @var mixed
      */
     private $notBindProperty;
@@ -39,9 +45,10 @@ class TestObject extends AbstractClass
     /**
      * @param string $firstname
      */
-    public function setFirstname(string $firstname): void
+    public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
+        return $this;
     }
 
     /**
@@ -55,9 +62,10 @@ class TestObject extends AbstractClass
     /**
      * @param string $othername
      */
-    public function setOtherName(string $othername)
+    public function setOtherName(string $othername): self
     {
         $this->lastname = $othername;
+        return $this;
     }
 
     /**
@@ -71,8 +79,32 @@ class TestObject extends AbstractClass
     /**
      * @param string $notBindProperty
      */
-    public function setNotBindProperty($notBindProperty): void
+    public function setNotBindProperty($notBindProperty): self
     {
         $this->notBindProperty = $notBindProperty;
+        return $this;
+    }
+
+    /**
+     * Getter for userEmail
+     *
+     * @return string
+     */
+    public function getUserEmail()
+    {
+        return $this->userEmail;
+    }
+
+    /**
+     * Setter for userEmail
+     *
+     * @param string $userEmail
+     *
+     * @return self
+     */
+    public function setUserEmail(string $userEmail): self
+    {
+        $this->userEmail = $userEmail;
+        return $this;
     }
 }
