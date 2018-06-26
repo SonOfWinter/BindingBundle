@@ -32,7 +32,8 @@ class BinderTest extends TestCase
     {
         $dataArray = [
             'lastname'  => 'Bullock',
-            'firstname' => 'Ryan'
+            'firstname' => 'Ryan',
+            'userEmail' => 'r.bullock@mail.com'
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
@@ -49,6 +50,10 @@ class BinderTest extends TestCase
         $this->assertEquals(
             $dataArray['firstname'],
             $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray['userEmail'],
+            $testObject->getUserEmail()
         );
         $this->assertEquals(
             null,
@@ -76,6 +81,10 @@ class BinderTest extends TestCase
         $this->assertEquals(
             null,
             $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getUserEmail()
         );
         $this->assertEquals(
             null,
