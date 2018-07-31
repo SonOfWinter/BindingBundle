@@ -92,3 +92,11 @@ Use Binder service for bind an array to entity
     }
 ```
 
+Next / Ideas
+============
+
+> Get array of all property or all keys from entity
+
+> add include and exclude
+* include is all needed elements (throws exception if one or more missing)
+* exclude pass all ellement in list even if the key are in array
