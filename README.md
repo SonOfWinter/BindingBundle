@@ -100,3 +100,5 @@ Next / Ideas
 > add include and exclude
 * include is all needed elements (throws exception if one or more missing)
 * exclude pass all ellement in list even if the key are in array
+
+> recursive (bind children)
