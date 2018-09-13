@@ -12,6 +12,9 @@
 
 namespace SOW\BindingBundle;
 
+use SOW\BindingBundle\Exception\BinderConfigurationException;
+use SOW\BindingBundle\Exception\BinderTypeException;
+
 /**
  * Interface BinderInterface
  *
@@ -19,7 +22,24 @@ namespace SOW\BindingBundle;
  */
 interface BinderInterface
 {
+    /**
+     * @throws BinderConfigurationException
+     * @throws \Exception
+     *
+     * @return null|BindingCollection
+     */
     public function getBindingCollection();
 
+    /**
+     * bind an array to entity
+     *
+     * @param       $object
+     * @param array $params
+     *
+     * @throws BinderConfigurationException
+     * @throws BinderTypeException
+     *
+     * @return void
+     */
     public function bind(&$object, array $params = []);
 }

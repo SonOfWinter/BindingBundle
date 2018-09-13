@@ -56,16 +56,23 @@ class Binder implements BinderInterface
     }
 
     /**
+     * setResource
+     *
      * @param $resource
+     *
+     * @throws \Exception
      *
      * @return void
      */
     public function setResource($resource)
     {
         $this->resource = $resource;
+        $this->loadCollection();
     }
 
     /**
+     * getBindingCollection
+     *
      * @throws BinderConfigurationException
      * @throws \Exception
      *
@@ -77,8 +84,21 @@ class Binder implements BinderInterface
             throw new BinderConfigurationException();
         }
         if (null === $this->collection) {
-            $this->collection = $this->loader->load($this->resource, 'annotation');
+            return $this->loadCollection();
         }
+        return $this->collection;
+    }
+
+    /**
+     * loadCollection
+     *
+     * @throws \Exception
+     *
+     * @return null|BindingCollection
+     */
+    private function loadCollection()
+    {
+        $this->collection = $this->loader->load($this->resource, 'annotation');
         return $this->collection;
     }
 
@@ -90,12 +110,13 @@ class Binder implements BinderInterface
      *
      * @throws BinderConfigurationException
      * @throws BinderTypeException
+     * @throws \Exception
      *
      * @return void
      */
     public function bind(&$object, array $params = [])
     {
-        if ($this->resource === null) {
+        if ($this->resource !== get_class($object)) {
             $this->setResource(get_class($object));
         }
         $collection = $this->getBindingCollection();
