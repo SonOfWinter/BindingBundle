@@ -102,3 +102,5 @@ Next / Ideas
 * exclude pass all ellement in list even if the key are in array
 
 > recursive (bind children)
+
+> Min and Max value (number only)
