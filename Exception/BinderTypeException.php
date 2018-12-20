@@ -19,6 +19,8 @@ namespace SOW\BindingBundle\Exception;
  */
 class BinderTypeException extends \Exception
 {
+    public const CODE = 2914402;
+
     /**
      * BinderTypeException constructor.
      *
@@ -30,7 +32,7 @@ class BinderTypeException extends \Exception
     public function __construct(
         string $typeExpected,
         string $typeReceived,
-        $code = 0,
+        $code = self::CODE,
         \Throwable $previous = null
     ) {
         $message = sprintf(
@@ -38,10 +40,6 @@ class BinderTypeException extends \Exception
             $typeExpected,
             $typeReceived
         );
-        parent::__construct(
-            $message,
-            $code,
-            $previous
-        );
+        parent::__construct($message, $code, $previous);
     }
 }

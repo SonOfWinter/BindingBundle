@@ -1,36 +1,35 @@
 <?php
 
 /**
- * BinderConfigurationException
- *
- * PHP Version 7.1
+ * PHP Version 7.1, 7.2
  *
  * @package  SOW\BindingBundle\Exception
- * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
- * @link     https://github.com/SonOfWinter/BindingBundle
+ * @author   Openium <contact@openium.fr>
+ * @license  Openium All right reserved
+ * @link     https://www.openium.fr/
  */
 
 namespace SOW\BindingBundle\Exception;
 
 /**
- * Class BinderConfigurationException
+ * Class BinderProxyClassException
  *
  * @package SOW\BindingBundle\Exception
  */
-class BinderConfigurationException extends \Exception
+class BinderProxyClassException extends \Exception
 {
-    public const MESSAGE = "The Binder is not configured";
-    public const CODE = 2914401;
+    public const MESSAGE = "Don't use Doctrine Proxy class with Binder";
+    public const CODE = 2914403;
 
     /**
-     * BinderConfigurationException constructor.
+     * BinderProxyClassException constructor.
      *
      * @param string $message
      * @param int $code
      * @param \Throwable|null $previous
      */
     public function __construct(
-        $message = self::MESSAGE,
+        string $message = self::MESSAGE,
         $code = self::CODE,
         \Throwable $previous = null
     ) {

@@ -15,6 +15,7 @@ namespace SOW\BindingBundle\Tests;
 use Doctrine\Common\Annotations\AnnotationReader;
 use SOW\BindingBundle\Binder;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
+use SOW\BindingBundle\Tests\Fixtures\__CG__\AnnotatedClasses\ProxyTestObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
@@ -162,6 +163,27 @@ class BinderTest extends TestCase
             'age'       => true
         ];
         $testObject = new TestTypedObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
+    }
+
+
+    /**
+     * @expectedException SOW\BindingBundle\Exception\BinderProxyClassException
+     */
+    public function testBinderWithProxyResource()
+    {
+        $dataArray = [
+            'lastname'  => 'Bullock',
+            'firstname' => 5.7,
+            'age'       => true
+        ];
+        $testObject = new ProxyTestObject();
         $reader = new AnnotationReader();
         $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);

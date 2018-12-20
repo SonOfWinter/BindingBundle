@@ -12,8 +12,10 @@
 
 namespace SOW\BindingBundle;
 
+use Doctrine\ORM\Proxy\Proxy;
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
+use SOW\BindingBundle\Exception\BinderProxyClassException;
 use SOW\BindingBundle\Exception\BinderTypeException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -110,6 +112,7 @@ class Binder implements BinderInterface
      *
      * @throws BinderConfigurationException
      * @throws BinderTypeException
+     * @throws BinderProxyClassException
      * @throws \Exception
      *
      * @return void
@@ -118,6 +121,9 @@ class Binder implements BinderInterface
     {
         if ($this->resource !== get_class($object)) {
             $this->setResource(get_class($object));
+        }
+        if (strpos($this->resource, Proxy::MARKER) !== false) {
+            throw new BinderProxyClassException();
         }
         $collection = $this->getBindingCollection();
         foreach ($collection as $binding) {
