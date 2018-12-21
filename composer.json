@@ -3,6 +3,12 @@
     "type": "symfony-bundle",
     "license": "MIT",
     "description": "This Bundle provides a binding from array to Entity with Symfony",
+    "keywords": [
+        "symfony",
+        "php",
+        "bundle",
+        "binding"
+    ],
     "authors": [
         {
             "name": "Thomas Leduc",
