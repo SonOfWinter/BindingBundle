@@ -15,6 +15,7 @@ namespace SOW\BindingBundle;
 use Doctrine\ORM\Proxy\Proxy;
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
+use SOW\BindingBundle\Exception\BinderIncludeException;
 use SOW\BindingBundle\Exception\BinderProxyClassException;
 use SOW\BindingBundle\Exception\BinderTypeException;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -48,7 +49,8 @@ class Binder implements BinderInterface
 
     /**
      * Binder constructor.
-     * @param LoaderInterface      $loader
+     *
+     * @param LoaderInterface $loader
      * @param LoggerInterface|null $logger
      */
     public function __construct(LoaderInterface $loader, LoggerInterface $logger = null)
@@ -85,9 +87,6 @@ class Binder implements BinderInterface
         if ($this->resource === null) {
             throw new BinderConfigurationException();
         }
-        if (null === $this->collection) {
-            return $this->loadCollection();
-        }
         return $this->collection;
     }
 
@@ -109,15 +108,17 @@ class Binder implements BinderInterface
      *
      * @param       $object
      * @param array $params
+     * @param array $include
+     * @param array $exclude
      *
      * @throws BinderConfigurationException
-     * @throws BinderTypeException
      * @throws BinderProxyClassException
-     * @throws \Exception
+     * @throws BinderTypeException
+     * @throws BinderIncludeException
      *
      * @return void
      */
-    public function bind(&$object, array $params = [])
+    public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
     {
         if ($this->resource !== get_class($object)) {
             $this->setResource(get_class($object));
@@ -125,9 +126,17 @@ class Binder implements BinderInterface
         if (strpos($this->resource, Proxy::MARKER) !== false) {
             throw new BinderProxyClassException();
         }
+        $includeCount = count($include);
+        $includeIntersect = count(array_intersect($include, array_keys($params)));
+        if ($includeCount !== $includeIntersect) {
+            throw new BinderIncludeException();
+        }
         $collection = $this->getBindingCollection();
         foreach ($collection as $binding) {
             if (array_key_exists($binding->getKey(), $params)) {
+                if (in_array($binding->getKey(), $exclude)) {
+                    continue;
+                }
                 $method = $binding->getSetter();
                 $value = $params[$binding->getKey()];
                 if (!empty($binding->getType())) {

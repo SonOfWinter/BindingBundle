@@ -192,4 +192,126 @@ class BinderTest extends TestCase
             $dataArray
         );
     }
+
+    public function testBinderWithExcludeProperties()
+    {
+        $dataArray = [
+            'lastname'  => 'Bullock',
+            'firstname' => 'Ryan',
+            'userEmail' => 'r.bullock@mail.com'
+        ];
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $bindingService->bind(
+            $testObject,
+            $dataArray,
+            [],
+            ['firstname']
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertNull($testObject->getFirstname());
+        $this->assertEquals(
+            $dataArray['userEmail'],
+            $testObject->getUserEmail()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
+    }
+
+    public function testBinderWithWrongExcludeProperties()
+    {
+        $dataArray = [
+            'lastname'  => 'Bullock',
+            'firstname' => 'Ryan',
+            'userEmail' => 'r.bullock@mail.com'
+        ];
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $bindingService->bind(
+            $testObject,
+            $dataArray,
+            [],
+            ['wrongValue']
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['firstname'],
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray['userEmail'],
+            $testObject->getUserEmail()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
+    }
+
+    public function testBinderWithIncludeProperties()
+    {
+        $dataArray = [
+            'lastname'  => 'Bullock',
+            'firstname' => 'Ryan',
+            'userEmail' => 'r.bullock@mail.com'
+        ];
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $bindingService->bind(
+            $testObject,
+            $dataArray,
+            ['lastname', 'firstname']
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['firstname'],
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray['userEmail'],
+            $testObject->getUserEmail()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
+    }
+
+    /**
+     * @expectedException SOW\BindingBundle\Exception\BinderIncludeException
+     */
+    public function testBinderWithMissingIncludeProperties()
+    {
+        $dataArray = [
+            'lastname'  => 'Bullock',
+            'firstname' => 'Ryan',
+            'userEmail' => 'r.bullock@mail.com'
+        ];
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $bindingService->bind(
+            $testObject,
+            $dataArray,
+            ['lastname', 'firstname', 'phone']
+        );
+    }
 }
