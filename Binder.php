@@ -129,7 +129,7 @@ class Binder implements BinderInterface
         $includeCount = count($include);
         $includeIntersect = count(array_intersect($include, array_keys($params)));
         if ($includeCount !== $includeIntersect) {
-            throw new BinderIncludeException();
+            throw new BinderIncludeException(array_diff($include, array_keys($params)));
         }
         $collection = $this->getBindingCollection();
         foreach ($collection as $binding) {
@@ -143,7 +143,7 @@ class Binder implements BinderInterface
                     $valueType = gettype($value);
                     $annotType = $binding->getType();
                     if ($valueType !== $annotType) {
-                        throw new BinderTypeException($annotType, $valueType);
+                        throw new BinderTypeException($annotType, $valueType, $binding->getKey());
                     }
                 }
                 $object->$method($value);

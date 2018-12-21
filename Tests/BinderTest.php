@@ -153,7 +153,7 @@ class BinderTest extends TestCase
 
     /**
      * @expectedException SOW\BindingBundle\Exception\BinderTypeException
-     * @expectedExceptionMessage Wrong value type. Expected : string, received : double
+     * @expectedExceptionMessage Wrong firstname parameter type. Expected : string, received : double
      */
     public function testBinderWithWrongTypedProperties()
     {
@@ -175,6 +175,7 @@ class BinderTest extends TestCase
 
     /**
      * @expectedException SOW\BindingBundle\Exception\BinderProxyClassException
+     * @expectedExceptionMessage Don't use Doctrine Proxy class with Binder
      */
     public function testBinderWithProxyResource()
     {
@@ -296,6 +297,7 @@ class BinderTest extends TestCase
 
     /**
      * @expectedException SOW\BindingBundle\Exception\BinderIncludeException
+     * @expectedExceptionMessage Missing mandatory keys : phone
      */
     public function testBinderWithMissingIncludeProperties()
     {

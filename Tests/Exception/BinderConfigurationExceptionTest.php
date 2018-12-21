@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * PHP Version 7.1, 7.2
+ *
+ * @package  ${NAMESPACE}
+ * @author   Openium <contact@openium.fr>
+ * @license  Openium All right reserved
+ * @link     https://www.openium.fr/
+ */
+
+namespace SOW\BindingBundle\Tests\Exception;
+
+use SOW\BindingBundle\Exception\BinderConfigurationException;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+
+/**
+ * Class BinderConfigurationExceptionTest
+ *
+ * @package SOW\BindingBundle\Tests\Exception
+ */
+class BinderConfigurationExceptionTest extends TestCase
+{
+    public function testException()
+    {
+        $exception = new BinderConfigurationException();
+        $this->assertEquals(BinderConfigurationException::CODE, $exception->getCode());
+        $this->assertEquals(BinderConfigurationException::MESSAGE, $exception->getMessage());
+    }
+}

@@ -19,8 +19,13 @@ namespace SOW\BindingBundle\Exception;
  */
 class BinderIncludeException extends \Exception
 {
-    public const MESSAGE = "Missing mandatory keys";
+    public const MESSAGE = "Missing mandatory keys : %s";
     public const CODE = 2914404;
+
+    /**
+     * @var array
+     */
+    private $missingKeys;
 
     /**
      * BinderProxyClassException constructor.
@@ -28,12 +33,28 @@ class BinderIncludeException extends \Exception
      * @param string $message
      * @param int $code
      * @param \Throwable|null $previous
+     * @param array $missingKeys
      */
     public function __construct(
-        string $message = self::MESSAGE,
+        array $missingKeys = [],
+        string $message = "",
         $code = self::CODE,
         \Throwable $previous = null
     ) {
+        if ($message === "") {
+            $message = sprintf(self::MESSAGE, implode(", ", $missingKeys));
+        }
+        $this->missingKeys = $missingKeys;
         parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * Getter for missingKeys
+     *
+     * @return array
+     */
+    public function getMissingKeys(): array
+    {
+        return $this->missingKeys;
     }
 }
