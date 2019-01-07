@@ -13,7 +13,6 @@
 namespace SOW\BindingBundle;
 
 use SOW\BindingBundle\Exception\BinderConfigurationException;
-use SOW\BindingBundle\Exception\BinderTypeException;
 
 /**
  * Interface BinderInterface
@@ -35,11 +34,10 @@ interface BinderInterface
      *
      * @param       $object
      * @param array $params
-     *
-     * @throws BinderConfigurationException
-     * @throws BinderTypeException
+     * @param array $include
+     * @param array $exclude
      *
      * @return void
      */
-    public function bind(&$object, array $params = []);
+    public function bind(&$object, array $params = [], array $include = [], array $exclude = []);
 }
