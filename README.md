@@ -92,6 +92,16 @@ Use Binder service for bind an array to entity
     }
 ```
 
+New in v0.4 inclusion and exclusion
+
+```php
+    public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
+```
+
+$include is a key array required in $params, if one or more keys are missing, an exception is thrown
+
+$exclude is a key array ignored in $params. No exception was thrown is a key is present.
+
 Next / Ideas
 ============
 

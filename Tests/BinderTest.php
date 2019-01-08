@@ -316,4 +316,17 @@ class BinderTest extends TestCase
             ['lastname', 'firstname', 'phone']
         );
     }
+
+    public function testGetKeys()
+    {
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $result = $bindingService->getKeys($testObject);
+        $this->assertEquals(3, count($result));
+        $this->assertTrue(in_array('lastname', $result));
+        $this->assertTrue(in_array('firstname', $result));
+        $this->assertTrue(in_array('userEmail', $result));
+    }
 }

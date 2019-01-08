@@ -13,6 +13,7 @@
 namespace SOW\BindingBundle;
 
 use Doctrine\ORM\Proxy\Proxy;
+use function foo\func;
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
 use SOW\BindingBundle\Exception\BinderIncludeException;
@@ -120,12 +121,7 @@ class Binder implements BinderInterface
      */
     public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
     {
-        if ($this->resource !== get_class($object)) {
-            $this->setResource(get_class($object));
-        }
-        if (strpos($this->resource, Proxy::MARKER) !== false) {
-            throw new BinderProxyClassException();
-        }
+        $this->checkResource($object);
         $includeCount = count($include);
         $includeIntersect = count(array_intersect($include, array_keys($params)));
         if ($includeCount !== $includeIntersect) {
@@ -148,6 +144,46 @@ class Binder implements BinderInterface
                 }
                 $object->$method($value);
             }
+        }
+    }
+
+    /**
+     * getKeys
+     *
+     * @param $object
+     *
+     * @throws BinderConfigurationException
+     * @throws BinderProxyClassException
+     *
+     * @return array
+     */
+    public function getKeys($object): array
+    {
+        $this->checkResource($object);
+        $collection = $this->getBindingCollection();
+        $bindings = $collection->all();
+        $getKey = function (Binding $binding) {
+            return $binding->getKey();
+        };
+        return array_map($getKey, $bindings);
+    }
+
+    /**
+     * checkResource
+     *
+     * @param $object
+     *
+     * @throws BinderProxyClassException
+     *
+     * @return void
+     */
+    protected function checkResource($object)
+    {
+        if ($this->resource !== get_class($object)) {
+            $this->setResource(get_class($object));
+        }
+        if (strpos($this->resource, Proxy::MARKER) !== false) {
+            throw new BinderProxyClassException();
         }
     }
 }
