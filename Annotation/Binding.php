@@ -45,6 +45,20 @@ class Binding
     public $type;
 
     /**
+     * Min value length
+     *
+     * @var mixed
+     */
+    public $min;
+
+    /**
+     * Max value length
+     *
+     * @var mixed
+     */
+    public $max;
+
+    /**
      * Binding constructor.
      *
      * @param array $data
@@ -142,6 +156,52 @@ class Binding
     public function setType($type): self
     {
         $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Getter for min
+     *
+     * @return mixed
+     */
+    public function getMin()
+    {
+        return $this->min;
+    }
+
+    /**
+     * Setter for min
+     *
+     * @param mixed $min
+     *
+     * @return self
+     */
+    public function setMin($min): self
+    {
+        $this->min = $min;
+        return $this;
+    }
+
+    /**
+     * Getter for max
+     *
+     * @return mixed
+     */
+    public function getMax()
+    {
+        return $this->max;
+    }
+
+    /**
+     * Setter for max
+     *
+     * @param mixed $max
+     *
+     * @return self
+     */
+    public function setMax($max): self
+    {
+        $this->max = $max;
         return $this;
     }
 }

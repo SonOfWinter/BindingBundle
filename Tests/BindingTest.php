@@ -27,7 +27,9 @@ class BindingTest extends TestCase
         $binding = new Binding(
             'foo',
             'setFoo',
-            'string'
+            'string',
+            0,
+            100
         );
         $this->assertEquals(
             'foo',
@@ -45,6 +47,14 @@ class BindingTest extends TestCase
             'foo',
             $binding->__toString()
         );
+        $this->assertEquals(
+            0,
+            $binding->getMin()
+        );
+        $this->assertEquals(
+            100,
+            $binding->getMax()
+        );
     }
 
     public function testSetter()
@@ -56,6 +66,8 @@ class BindingTest extends TestCase
         $binding->setKey('bar');
         $binding->setSetter('setBar');
         $binding->setType('string');
+        $binding->setMax(8);
+        $binding->setMin(2);
         $this->assertEquals(
             'bar',
             $binding->getKey()
@@ -68,6 +80,14 @@ class BindingTest extends TestCase
             'string',
             $binding->getType()
         );
+        $this->assertEquals(
+            2,
+            $binding->getMin()
+        );
+        $this->assertEquals(
+            8,
+            $binding->getMax()
+        );
     }
 
     public function testSerialize()
@@ -75,7 +95,9 @@ class BindingTest extends TestCase
         $binding = new Binding(
             'foo',
             'setFoo',
-            'string'
+            'string',
+            0,
+            100
         );
         $serialize = $binding->serialize();
 
@@ -97,6 +119,14 @@ class BindingTest extends TestCase
         $this->assertEquals(
             'string',
             $binding->getType()
+        );
+        $this->assertEquals(
+            0,
+            $binding->getMin()
+        );
+        $this->assertEquals(
+            100,
+            $binding->getMax()
         );
     }
 }

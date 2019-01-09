@@ -14,9 +14,12 @@ namespace SOW\BindingBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use SOW\BindingBundle\Binder;
+use SOW\BindingBundle\Exception\BinderMaxValueException;
+use SOW\BindingBundle\Exception\BinderMinValueException;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use SOW\BindingBundle\Tests\Fixtures\__CG__\AnnotatedClasses\ProxyTestObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
+use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedMinMaxObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
@@ -32,9 +35,10 @@ class BinderTest extends TestCase
     public function testBinderWithAllProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 'Ryan',
-            'userEmail' => 'r.bullock@mail.com'
+            'userEmail' => 'r.bullock@mail.com',
+            'age' => 25
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
@@ -121,9 +125,9 @@ class BinderTest extends TestCase
     public function testBinderWithAllTypedProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 'Ryan',
-            'age'       => 24
+            'age' => 25
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
@@ -158,9 +162,9 @@ class BinderTest extends TestCase
     public function testBinderWithWrongTypedProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 5.7,
-            'age'       => true
+            'age' => true
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
@@ -180,9 +184,9 @@ class BinderTest extends TestCase
     public function testBinderWithProxyResource()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 5.7,
-            'age'       => true
+            'age' => true
         ];
         $testObject = new ProxyTestObject();
         $reader = new AnnotationReader();
@@ -197,7 +201,7 @@ class BinderTest extends TestCase
     public function testBinderWithExcludeProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 'Ryan',
             'userEmail' => 'r.bullock@mail.com'
         ];
@@ -229,7 +233,7 @@ class BinderTest extends TestCase
     public function testBinderWithWrongExcludeProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 'Ryan',
             'userEmail' => 'r.bullock@mail.com'
         ];
@@ -264,7 +268,7 @@ class BinderTest extends TestCase
     public function testBinderWithIncludeProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 'Ryan',
             'userEmail' => 'r.bullock@mail.com'
         ];
@@ -302,7 +306,7 @@ class BinderTest extends TestCase
     public function testBinderWithMissingIncludeProperties()
     {
         $dataArray = [
-            'lastname'  => 'Bullock',
+            'lastname' => 'Bullock',
             'firstname' => 'Ryan',
             'userEmail' => 'r.bullock@mail.com'
         ];
@@ -328,5 +332,195 @@ class BinderTest extends TestCase
         $this->assertTrue(in_array('lastname', $result));
         $this->assertTrue(in_array('firstname', $result));
         $this->assertTrue(in_array('userEmail', $result));
+    }
+
+
+    public function testBinderWithAllTypedAndMinMaxProperties()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryan',
+            'age' => 25,
+            'letterList' => ['a', 'b', 'c']
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['firstname'],
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray['age'],
+            $testObject->getAge()
+        );
+        $this->assertEquals(
+            $dataArray['letterList'],
+            $testObject->getLetterList()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
+        );
+    }
+
+    public function testBinderWithMaxIntPropertyError()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryan',
+            'age' => 125,
+            'letterList' => ['a', 'b', 'c']
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        try {
+            $bindingService->bind(
+                $testObject,
+                $dataArray
+            );
+            $this->fail('BinderMaxValueException must be throw');
+        } catch (BinderMaxValueException $e) {
+            $this->assertEquals(100, $e->getMax());
+            $this->assertEquals('age', $e->getKey());
+            $this->assertEquals('age must have a value less than : 100', $e->getMessage());
+        }
+    }
+
+    public function testBinderWithMinIntPropertyError()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryan',
+            'age' => -25,
+            'letterList' => ['a', 'b', 'c']
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        try {
+            $bindingService->bind(
+                $testObject,
+                $dataArray
+            );
+            $this->fail('BinderMinValueException must be throw');
+        } catch (BinderMinValueException $e) {
+            $this->assertEquals(0, $e->getMin());
+            $this->assertEquals('age', $e->getKey());
+            $this->assertEquals('age must have a value more than : 0', $e->getMessage());
+        }
+    }
+
+    public function testBinderWithMaxStringPropertyError()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryanapoiutonugindpoad',
+            'age' => 20,
+            'letterList' => ['a', 'b', 'c']
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        try {
+            $bindingService->bind(
+                $testObject,
+                $dataArray
+            );
+            $this->fail('BinderMaxValueException must be throw');
+        } catch (BinderMaxValueException $e) {
+            $this->assertEquals(20, $e->getMax());
+            $this->assertEquals('firstname', $e->getKey());
+            $this->assertEquals('firstname must have a value less than : 20', $e->getMessage());
+        }
+    }
+
+    public function testBinderWithMinStringPropertyError()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'a',
+            'age' => 20,
+            'letterList' => ['a', 'b', 'c']
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        try {
+            $bindingService->bind(
+                $testObject,
+                $dataArray
+            );
+            $this->fail('BinderMinValueException must be throw');
+        } catch (BinderMinValueException $e) {
+            $this->assertEquals(2, $e->getMin());
+            $this->assertEquals('firstname', $e->getKey());
+            $this->assertEquals('firstname must have a value more than : 2', $e->getMessage());
+        }
+    }
+
+
+    public function testBinderWithMaxArrayPropertyError()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryan',
+            'age' => 20,
+            'letterList' => ['a', 'b', 'c', 'd', 'e']
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        try {
+            $bindingService->bind(
+                $testObject,
+                $dataArray
+            );
+            $this->fail('BinderMaxValueException must be throw');
+        } catch (BinderMaxValueException $e) {
+            $this->assertEquals(3, $e->getMax());
+            $this->assertEquals('letterList', $e->getKey());
+            $this->assertEquals('letterList must have a value less than : 3', $e->getMessage());
+        }
+    }
+
+    public function testBinderWithMinArrayPropertyError()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryan',
+            'age' => 20,
+            'letterList' => []
+        ];
+        $testObject = new TestTypedMinMaxObject();
+        $reader = new AnnotationReader();
+        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader);
+        try {
+            $bindingService->bind(
+                $testObject,
+                $dataArray
+            );
+            $this->fail('BinderMinValueException must be throw');
+        } catch (BinderMinValueException $e) {
+            $this->assertEquals(1, $e->getMin());
+            $this->assertEquals('letterList', $e->getKey());
+            $this->assertEquals('letterList must have a value more than : 1', $e->getMessage());
+        }
     }
 }

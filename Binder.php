@@ -13,10 +13,11 @@
 namespace SOW\BindingBundle;
 
 use Doctrine\ORM\Proxy\Proxy;
-use function foo\func;
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
 use SOW\BindingBundle\Exception\BinderIncludeException;
+use SOW\BindingBundle\Exception\BinderMaxValueException;
+use SOW\BindingBundle\Exception\BinderMinValueException;
 use SOW\BindingBundle\Exception\BinderProxyClassException;
 use SOW\BindingBundle\Exception\BinderTypeException;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -116,6 +117,8 @@ class Binder implements BinderInterface
      * @throws BinderProxyClassException
      * @throws BinderTypeException
      * @throws BinderIncludeException
+     * @throws BinderMaxValueException
+     * @throws BinderMinValueException
      *
      * @return void
      */
@@ -136,11 +139,13 @@ class Binder implements BinderInterface
                 $method = $binding->getSetter();
                 $value = $params[$binding->getKey()];
                 if (!empty($binding->getType())) {
-                    $valueType = gettype($value);
-                    $annotType = $binding->getType();
-                    if ($valueType !== $annotType) {
-                        throw new BinderTypeException($annotType, $valueType, $binding->getKey());
-                    }
+                    $this->checkType($binding, $value);
+                }
+                if ($binding->getMin() !== null) {
+                    $this->checkMinValue($binding->getKey(), $value, $binding->getMin());
+                }
+                if ($binding->getMax() !== null) {
+                    $this->checkMaxValue($binding->getKey(), $value, $binding->getMax());
                 }
                 $object->$method($value);
             }
@@ -184,6 +189,81 @@ class Binder implements BinderInterface
         }
         if (strpos($this->resource, Proxy::MARKER) !== false) {
             throw new BinderProxyClassException();
+        }
+    }
+
+    /**
+     * checkType
+     *
+     * @param Binding $binding
+     * @param $value
+     *
+     * @throws BinderTypeException
+     *
+     * @return void
+     */
+    protected function checkType(Binding $binding, $value)
+    {
+        $valueType = gettype($value);
+        $annotType = $binding->getType();
+        if ($valueType !== $annotType) {
+            throw new BinderTypeException($annotType, $valueType, $binding->getKey());
+        }
+    }
+
+    /**
+     * checkMinValue
+     *
+     * @param $key
+     * @param $value
+     * @param $min
+     *
+     * @throws BinderMinValueException
+     *
+     * @return void
+     */
+    protected function checkMinValue($key, $value, $min)
+    {
+        if (is_string($value)) {
+            if (strlen($value) < $min) {
+                throw new BinderMinValueException($key, $min);
+            }
+        } elseif (is_numeric($value)) {
+            if ($value < $min) {
+                throw new BinderMinValueException($key, $min);
+            }
+        } elseif (is_iterable($value)) {
+            if (count($value) < $min) {
+                throw new BinderMinValueException($key, $min);
+            }
+        }
+    }
+
+    /**
+     * checkMaxValue
+     *
+     * @param $key
+     * @param $value
+     * @param $max
+     *
+     * @throws BinderMaxValueException
+     *
+     * @return void
+     */
+    protected function checkMaxValue($key, $value, $max)
+    {
+        if (is_string($value)) {
+            if (strlen($value) > $max) {
+                throw new BinderMaxValueException($key, $max);
+            }
+        } elseif (is_numeric($value)) {
+            if ($value > $max) {
+                throw new BinderMaxValueException($key, $max);
+            }
+        } elseif (is_iterable($value)) {
+            if (count($value) > $max) {
+                throw new BinderMaxValueException($key, $max);
+            }
         }
     }
 }

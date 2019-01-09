@@ -40,4 +40,13 @@ interface BinderInterface
      * @return void
      */
     public function bind(&$object, array $params = [], array $include = [], array $exclude = []);
+
+    /**
+     * getKeys
+     *
+     * @param $object
+     *
+     * @return array
+     */
+    public function getKeys($object): array;
 }

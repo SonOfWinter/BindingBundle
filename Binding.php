@@ -35,15 +35,31 @@ class Binding implements \Serializable
     private $type = '';
 
     /**
+     * @var mixed
+     */
+    private $min = null;
+
+    /**
+     * @var mixed
+     */
+    private $max = null;
+
+    /**
      * Binding constructor.
+     *
      * @param string $key
      * @param string $setter
+     * @param string $type
+     * @param null $min
+     * @param null $max
      */
-    public function __construct(string $key, string $setter, $type = '')
+    public function __construct(string $key, string $setter, $type = '', $min = null, $max = null)
     {
         $this->key = $key;
         $this->setter = $setter;
         $this->type = $type;
+        $this->min = $min;
+        $this->max = $max;
     }
 
     /**
@@ -51,11 +67,15 @@ class Binding implements \Serializable
      */
     public function serialize()
     {
-        return serialize([
-            'key'    => $this->key,
-            'setter' => $this->setter,
-            'type'   => $this->type
-        ]);
+        return serialize(
+            [
+                'key' => $this->key,
+                'setter' => $this->setter,
+                'type' => $this->type,
+                'min' => $this->min,
+                'max' => $this->max
+            ]
+        );
     }
 
     /**
@@ -67,6 +87,8 @@ class Binding implements \Serializable
         $this->key = $data['key'];
         $this->setter = $data['setter'];
         $this->type = $data['type'];
+        $this->min = $data['min'];
+        $this->max = $data['max'];
     }
 
     /**
@@ -135,6 +157,52 @@ class Binding implements \Serializable
     public function setType(string $type): self
     {
         $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Getter for min
+     *
+     * @return mixed
+     */
+    public function getMin()
+    {
+        return $this->min;
+    }
+
+    /**
+     * Setter for min
+     *
+     * @param mixed $min
+     *
+     * @return self
+     */
+    public function setMin($min): self
+    {
+        $this->min = $min;
+        return $this;
+    }
+
+    /**
+     * Getter for max
+     *
+     * @return mixed
+     */
+    public function getMax()
+    {
+        return $this->max;
+    }
+
+    /**
+     * Setter for max
+     *
+     * @param mixed $max
+     *
+     * @return self
+     */
+    public function setMax($max): self
+    {
+        $this->max = $max;
         return $this;
     }
 

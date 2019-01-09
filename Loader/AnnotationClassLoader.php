@@ -64,7 +64,7 @@ class AnnotationClassLoader implements LoaderInterface
     }
 
     /**
-     * TODO description
+     * Load Binding data from class
      *
      * @param mixed $class
      * @param null  $type
@@ -139,7 +139,9 @@ class AnnotationClassLoader implements LoaderInterface
             $binding = new Binding(
                 $annot->getKey() ?? $propertyName,
                 $method,
-                $annot->getType()
+                $annot->getType(),
+                $annot->getMin(),
+                $annot->getMax()
             );
             $collection->add($binding);
         }
