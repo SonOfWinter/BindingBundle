@@ -118,8 +118,10 @@ new in v0.5 min and max
     private $age;
 ```
 
-The min and max value check if the value is in range defined by the two properties
+The min and max value check if the value is in range defined by the two properties.
+
 If not, a specific exception was thrown
+
 Works with number, string (length) and array (count)
 
 Next / Ideas
