@@ -13,6 +13,7 @@
 namespace SOW\BindingBundle;
 
 use SOW\BindingBundle\Exception\BinderConfigurationException;
+use SOW\BindingBundle\Exception\BinderException;
 
 /**
  * Interface BinderInterface
@@ -36,6 +37,8 @@ interface BinderInterface
      * @param array $params
      * @param array $include
      * @param array $exclude
+     *
+     * @throws BinderException
      *
      * @return void
      */
