@@ -17,7 +17,7 @@ namespace SOW\BindingBundle\Exception;
  *
  * @package SOW\BindingBundle\Exception
  */
-class BinderConfigurationException extends \Exception
+class BinderConfigurationException extends BinderException
 {
     public const MESSAGE = "The Binder is not configured";
     public const CODE = 2914401;

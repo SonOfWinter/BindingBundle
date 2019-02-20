@@ -17,7 +17,7 @@ namespace SOW\BindingBundle\Exception;
  *
  * @package  SOW\BindingBundle\Exception
  */
-class BinderIncludeException extends \Exception
+class BinderIncludeException extends BinderException
 {
     public const MESSAGE = "Missing mandatory keys : %s";
     public const CODE = 2914404;

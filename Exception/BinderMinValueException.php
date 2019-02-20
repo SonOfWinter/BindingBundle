@@ -17,7 +17,7 @@ namespace SOW\BindingBundle\Exception;
  *
  * @package  SOW\BindingBundle\Exception
  */
-class BinderMinValueException extends \Exception
+class BinderMinValueException extends BinderException
 {
     public const MESSAGE = "%s must have a value more than : %s";
     public const CODE = 2914405;

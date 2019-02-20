@@ -16,7 +16,7 @@ namespace SOW\BindingBundle\Exception;
  *
  * @package SOW\BindingBundle\Exception
  */
-class BinderProxyClassException extends \Exception
+class BinderProxyClassException extends BinderException
 {
     public const MESSAGE = "Don't use Doctrine Proxy class with Binder";
     public const CODE = 2914403;
