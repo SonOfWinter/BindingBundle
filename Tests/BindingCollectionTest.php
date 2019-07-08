@@ -31,7 +31,7 @@ class BindingCollectionTest extends TestCase
             'firstname',
             'setFirstname'
         );
-        $collection->add($binding);
+        $collection->addBinding($binding);
         $this->assertEquals(
             ['firstname' => $binding],
             $collection->all()
@@ -46,13 +46,13 @@ class BindingCollectionTest extends TestCase
     public function testOverrinddenBinding()
     {
         $collection = new BindingCollection();
-        $collection->add(
+        $collection->addBinding(
             new Binding(
                 'firstname',
                 'setFirstname'
             )
         );
-        $collection->add(
+        $collection->addBinding(
             new Binding(
                 'firstname',
                 'setLastname'
@@ -67,13 +67,13 @@ class BindingCollectionTest extends TestCase
     public function testCount()
     {
         $collection = new BindingCollection();
-        $collection->add(
+        $collection->addBinding(
             new Binding(
                 'firstname',
                 'setFirstname'
             )
         );
-        $collection->add(
+        $collection->addBinding(
             new Binding(
                 'lastname',
                 'setLastname'
@@ -88,13 +88,13 @@ class BindingCollectionTest extends TestCase
     public function testRemove()
     {
         $collection = new BindingCollection();
-        $collection->add(
+        $collection->addBinding(
             $binding1 = new Binding(
                 'firstname',
                 'setFirstname'
             )
         );
-        $collection->add(
+        $collection->addBinding(
             $binding2 = new Binding(
                 'lastname',
                 'setLastname'
@@ -111,10 +111,10 @@ class BindingCollectionTest extends TestCase
         );
     }
 
-    public function testAddCollection()
+    public function testMergeCollection()
     {
         $collection = new BindingCollection();
-        $collection->add(
+        $collection->addBinding(
             $b1 = new Binding(
                 'firstname',
                 'setFirstname'
@@ -128,13 +128,13 @@ class BindingCollectionTest extends TestCase
 
 
         $collection1 = new BindingCollection();
-        $collection1->add(
+        $collection1->addBinding(
             $b2 = new Binding(
                 'lastname',
                 'setLastname'
             )
         );
-        $collection1->add(
+        $collection1->addBinding(
             $b3 = new Binding(
                 'firstname',
                 'setFirstname'
@@ -147,7 +147,7 @@ class BindingCollectionTest extends TestCase
         );
 
         $collection2 = new BindingCollection();
-        $collection2->add(
+        $collection2->addBinding(
             $b4 = new Binding(
                 'email',
                 'setEmail'
@@ -155,10 +155,10 @@ class BindingCollectionTest extends TestCase
         );
         $collection2->addResource($r2);
 
-        $collection1->addCollection($collection2);
-        $collection->addCollection($collection1);
+        $collection1->mergeCollection($collection2);
+        $collection->mergeCollection($collection1);
 
-        $collection->add(
+        $collection->addBinding(
             $b5 = new Binding(
                 'username',
                 'setUsername'
@@ -183,7 +183,7 @@ class BindingCollectionTest extends TestCase
     public function testResource()
     {
         $collection = new BindingCollection();
-        $collection->add(
+        $collection->addBinding(
             new Binding(
                 'firstname',
                 'setFirstname'

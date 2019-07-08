@@ -30,7 +30,7 @@ For v0.3.0 and above
     private $lastname;
 
     /**
-     * @var string
+     * @var integer
      * @Binding(key="age", type="integer")
      */
     private $age;
@@ -59,7 +59,7 @@ For v0.2.0 and below
     private $lastname;
 
     /**
-     * @var string
+     * @var integer
      * @Binding(name="age", type="integer")
      */
     private $age;
@@ -68,7 +68,7 @@ For v0.2.0 and below
      * @var string
      * @Binding(name="userEmail")
      */
-    private $userEmail;  
+    private $userEmail;
 ```
 
 ---
@@ -112,7 +112,7 @@ new in v0.5 min and max
 
 ```php
     /**
-     * @var string
+     * @var integer
      * @Binding(key="age", type="integer", min=0, max=100)
      */
     private $age;
@@ -122,9 +122,42 @@ The min and max value check if the value is in range defined by the two properti
 
 If not, a specific exception was thrown
 
-Works with number, string (length) and array (count)
+Works with number (int/float), string (length) and array (count)
+
+new in v0.6 child binder
+------------------------
+
+```php
+    /** 
+     * @var Test
+     * @Binding(type="App\Entity\Test")
+     */
+    private $test;
+```
+
+A child entity can be binding when the type is set with the entity namespace.
+
+The getter is use to get the sub entity.
+If the sub entity is null, it try to create him (without parameter), if fail the binber skip sub entity.
+So if the constructor need parameters, the sub entity must be defined before the binder action. 
+
+Exemple of data :
+ 
+```php
+$data = [
+    'lastname' => 'Doe', 
+    'firstname' => 'John', 
+    'age' => 20, 
+    'userEmail' => 'some.email@mail.com',
+    'test' => [
+        'testProps1' => 'value',
+        'testProps2' => 'value'
+    ]
+];
+```
 
 Next / Ideas
 ============
 
-> recursive (bind children)
+* doctrine OneToMany
+* doctrine ManyToMany

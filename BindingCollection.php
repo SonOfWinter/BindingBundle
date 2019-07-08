@@ -56,7 +56,7 @@ class BindingCollection implements \IteratorAggregate, \Countable
      *
      * @return void
      */
-    public function add(Binding $binding)
+    public function addBinding(Binding $binding)
     {
         unset($this->bindings[$binding->getKey()]);
         $this->bindings[$binding->getKey()] = $binding;
@@ -65,7 +65,7 @@ class BindingCollection implements \IteratorAggregate, \Countable
     /**
      * Get all binding elements
      *
-     * @return Binding[]
+     * @return array
      */
     public function all()
     {
@@ -105,13 +105,12 @@ class BindingCollection implements \IteratorAggregate, \Countable
      *
      * @return void
      */
-    public function addCollection(BindingCollection $collection)
+    public function mergeCollection(BindingCollection $collection)
     {
         foreach ($collection->all() as $key => $binding) {
             unset($this->bindings[$key]);
             $this->bindings[$key] = $binding;
         }
-
         foreach ($collection->getResources() as $resource) {
             $this->addResource($resource);
         }

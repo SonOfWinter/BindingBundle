@@ -35,6 +35,12 @@ class TestObject extends AbstractClass
     private $notBindProperty;
 
     /**
+     * @var TestSubObject
+     * @Binding\Binding(type="SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject")
+     */
+    private $subObject;
+
+    /**
      * @return string
      */
     public function getFirstname()
@@ -105,6 +111,29 @@ class TestObject extends AbstractClass
     public function setUserEmail(string $userEmail): self
     {
         $this->userEmail = $userEmail;
+        return $this;
+    }
+
+    /**
+     * Getter for subObject
+     *
+     * @return TestSubObject|null
+     */
+    public function getSubObject(): ?TestSubObject
+    {
+        return $this->subObject;
+    }
+
+    /**
+     * Setter for subObject
+     *
+     * @param TestSubObject $subObject
+     *
+     * @return self
+     */
+    public function setSubObject(?TestSubObject $subObject): self
+    {
+        $this->subObject = $subObject;
         return $this;
     }
 }

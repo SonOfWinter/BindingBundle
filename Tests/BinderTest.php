@@ -38,7 +38,15 @@ class BinderTest extends TestCase
             'lastname' => 'Bullock',
             'firstname' => 'Ryan',
             'userEmail' => 'r.bullock@mail.com',
-            'age' => 25
+            'age' => 25,
+            'subObject' => [
+                'lastname' => 'Bullock',
+                'firstname' => 'Dale',
+                'subSubObject' => [
+                    'city' => 'Paris',
+                    'country' => 'France'
+                ]
+            ]
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
@@ -59,6 +67,22 @@ class BinderTest extends TestCase
         $this->assertEquals(
             $dataArray['userEmail'],
             $testObject->getUserEmail()
+        );
+        $this->assertEquals(
+            $dataArray['subObject']['firstname'],
+            $testObject->getSubObject()->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray['subObject']['lastname'],
+            $testObject->getSubObject()->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['subObject']['subSubObject']['city'],
+            $testObject->getSubObject()->getSubSubObject()->getCity()
+        );
+        $this->assertEquals(
+            $dataArray['subObject']['subSubObject']['country'],
+            $testObject->getSubObject()->getSubSubObject()->getCountry()
         );
         $this->assertEquals(
             null,
@@ -328,10 +352,11 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader);
         $result = $bindingService->getKeys($testObject);
-        $this->assertEquals(3, count($result));
+        $this->assertEquals(4, count($result));
         $this->assertTrue(in_array('lastname', $result));
         $this->assertTrue(in_array('firstname', $result));
         $this->assertTrue(in_array('userEmail', $result));
+        $this->assertTrue(in_array('subObject', $result));
     }
 
 

@@ -29,11 +29,8 @@ class BinderConfigurationException extends BinderException
      * @param int $code
      * @param \Throwable|null $previous
      */
-    public function __construct(
-        $message = self::MESSAGE,
-        $code = self::CODE,
-        \Throwable $previous = null
-    ) {
+    public function __construct($message = self::MESSAGE, $code = self::CODE, \Throwable $previous = null)
+    {
         parent::__construct($message, $code, $previous);
     }
 }

@@ -21,6 +21,7 @@ class BinderTypeException extends BinderException
 {
     public const CODE = 2914402;
     public const MESSAGE = "Wrong %s parameter type. Expected : %s, received : %s";
+
     /**
      * @var string
      */

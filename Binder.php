@@ -20,6 +20,7 @@ use SOW\BindingBundle\Exception\BinderMaxValueException;
 use SOW\BindingBundle\Exception\BinderMinValueException;
 use SOW\BindingBundle\Exception\BinderProxyClassException;
 use SOW\BindingBundle\Exception\BinderTypeException;
+use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 /**
@@ -131,23 +132,45 @@ class Binder implements BinderInterface
             throw new BinderIncludeException(array_diff($include, array_keys($params)));
         }
         $collection = $this->getBindingCollection();
+        /** @var Binding $binding */
         foreach ($collection as $binding) {
-            if (array_key_exists($binding->getKey(), $params)) {
-                if (in_array($binding->getKey(), $exclude)) {
-                    continue;
+            $getter = $binding->getGetter();
+            $setter = $binding->getSetter();
+            if (AnnotationClassLoader::isNotScalar($binding->getType())) {
+                $subObject = $object->$getter();
+                if (empty($subObject)) {
+                    try {
+                        $type = $binding->getType();
+                        $subObject = new $type();
+                    } catch (\TypeError $te) {
+                        error_log($te->getMessage());
+                    } catch (\Error $e) {
+                        error_log(get_class($e));
+                        error_log($e->getMessage());
+                    }
                 }
-                $method = $binding->getSetter();
-                $value = $params[$binding->getKey()];
-                if (!empty($binding->getType())) {
-                    $this->checkType($binding, $value);
+                if (!empty($subObject) && array_key_exists($binding->getKey(), $params)) {
+                    $this->bind($subObject, $params[$binding->getKey()]);
+                    $object->$setter($subObject);
+                    $this->checkResource($object);
                 }
-                if ($binding->getMin() !== null) {
-                    $this->checkMinValue($binding->getKey(), $value, $binding->getMin());
+            } else {
+                if (array_key_exists($binding->getKey(), $params)) {
+                    if (in_array($binding->getKey(), $exclude)) {
+                        continue;
+                    }
+                    $value = $params[$binding->getKey()];
+                    if (!empty($binding->getType())) {
+                        $this->checkType($binding, $value);
+                    }
+                    if ($binding->getMin() !== null) {
+                        $this->checkMinValue($binding->getKey(), $value, $binding->getMin());
+                    }
+                    if ($binding->getMax() !== null) {
+                        $this->checkMaxValue($binding->getKey(), $value, $binding->getMax());
+                    }
+                    $object->$setter($value);
                 }
-                if ($binding->getMax() !== null) {
-                    $this->checkMaxValue($binding->getKey(), $value, $binding->getMax());
-                }
-                $object->$method($value);
             }
         }
     }
@@ -206,7 +229,7 @@ class Binder implements BinderInterface
     {
         $valueType = gettype($value);
         $annotType = $binding->getType();
-        if ($valueType !== $annotType) {
+        if (!AnnotationClassLoader::isNotScalar($annotType) && $valueType !== $annotType) {
             throw new BinderTypeException($annotType, $valueType, $binding->getKey());
         }
     }

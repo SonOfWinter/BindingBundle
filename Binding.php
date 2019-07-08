@@ -12,6 +12,8 @@
 
 namespace SOW\BindingBundle;
 
+use phpDocumentor\Reflection\Types\Integer;
+
 /**
  * Class Binding
  *
@@ -32,17 +34,27 @@ class Binding implements \Serializable
     /**
      * @var string
      */
+    private $getter = '';
+
+    /**
+     * @var string
+     */
     private $type = '';
 
     /**
-     * @var mixed
+     * @var integer
      */
     private $min = null;
 
     /**
-     * @var mixed
+     * @var integer
      */
     private $max = null;
+
+    /**
+     * @var BindingCollection
+     */
+    private $subCollection;
 
     /**
      * Binding constructor.
@@ -50,16 +62,27 @@ class Binding implements \Serializable
      * @param string $key
      * @param string $setter
      * @param string $type
-     * @param null $min
-     * @param null $max
+     * @param int $min
+     * @param int $max
+     * @param BindingCollection $subCollection
+     * @param string|null $getter
      */
-    public function __construct(string $key, string $setter, $type = '', $min = null, $max = null)
-    {
+    public function __construct(
+        string $key,
+        string $setter,
+        ?string $type = '',
+        ?int $min = null,
+        ?int $max = null,
+        ?BindingCollection $subCollection = null,
+        ?string $getter = ''
+    ) {
         $this->key = $key;
         $this->setter = $setter;
         $this->type = $type;
         $this->min = $min;
         $this->max = $max;
+        $this->subCollection = $subCollection;
+        $this->getter = $getter;
     }
 
     /**
@@ -67,10 +90,12 @@ class Binding implements \Serializable
      */
     public function serialize()
     {
+        // TODO serialize subCollection
         return serialize(
             [
                 'key' => $this->key,
                 'setter' => $this->setter,
+                'getter' => $this->getter,
                 'type' => $this->type,
                 'min' => $this->min,
                 'max' => $this->max
@@ -86,6 +111,7 @@ class Binding implements \Serializable
         $data = unserialize($serialized);
         $this->key = $data['key'];
         $this->setter = $data['setter'];
+        $this->getter = $data['getter'];
         $this->type = $data['type'];
         $this->min = $data['min'];
         $this->max = $data['max'];
@@ -203,6 +229,52 @@ class Binding implements \Serializable
     public function setMax($max): self
     {
         $this->max = $max;
+        return $this;
+    }
+
+    /**
+     * Getter for subCollection
+     *
+     * @return BindingCollection|null
+     */
+    public function getSubCollection(): ?BindingCollection
+    {
+        return $this->subCollection;
+    }
+
+    /**
+     * Setter for subCollection
+     *
+     * @param BindingCollection|null $subCollection
+     *
+     * @return self
+     */
+    public function setSubCollection(?BindingCollection $subCollection): self
+    {
+        $this->subCollection = $subCollection;
+        return $this;
+    }
+
+    /**
+     * Getter for getter
+     *
+     * @return string
+     */
+    public function getGetter(): string
+    {
+        return $this->getter;
+    }
+
+    /**
+     * Setter for getter
+     *
+     * @param string $getter
+     *
+     * @return self
+     */
+    public function setGetter(string $getter): self
+    {
+        $this->getter = $getter;
         return $this;
     }
 

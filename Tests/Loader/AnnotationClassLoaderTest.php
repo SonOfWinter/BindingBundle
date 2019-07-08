@@ -110,7 +110,7 @@ class AnnotationClassLoaderTest extends TestCase
             'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject'
         );
         $this->assertEquals(
-            3,
+            4,
             $collection->count()
         );
     }

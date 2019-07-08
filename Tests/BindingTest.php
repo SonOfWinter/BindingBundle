@@ -13,6 +13,7 @@
 namespace SOW\BindingBundle\Tests;
 
 use SOW\BindingBundle\Binding;
+use SOW\BindingBundle\BindingCollection;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
 /**
@@ -29,32 +30,18 @@ class BindingTest extends TestCase
             'setFoo',
             'string',
             0,
-            100
-        );
-        $this->assertEquals(
-            'foo',
-            $binding->getKey()
-        );
-        $this->assertEquals(
-            'setFoo',
-            $binding->getSetter()
-        );
-        $this->assertEquals(
-            'string',
-            $binding->getType()
-        );
-        $this->assertEquals(
-            'foo',
-            $binding->__toString()
-        );
-        $this->assertEquals(
-            0,
-            $binding->getMin()
-        );
-        $this->assertEquals(
             100,
-            $binding->getMax()
+            null,
+            'getFoo'
         );
+        $this->assertEquals('foo', $binding->getKey());
+        $this->assertEquals('setFoo', $binding->getSetter());
+        $this->assertEquals('getFoo', $binding->getGetter());
+        $this->assertNull($binding->getSubCollection());
+        $this->assertEquals('string', $binding->getType());
+        $this->assertEquals('foo', $binding->__toString());
+        $this->assertEquals(0, $binding->getMin());
+        $this->assertEquals(100, $binding->getMax());
     }
 
     public function testSetter()
@@ -63,31 +50,21 @@ class BindingTest extends TestCase
             'foo',
             'setFoo'
         );
+        $subCollection = new BindingCollection();
         $binding->setKey('bar');
         $binding->setSetter('setBar');
         $binding->setType('string');
         $binding->setMax(8);
         $binding->setMin(2);
-        $this->assertEquals(
-            'bar',
-            $binding->getKey()
-        );
-        $this->assertEquals(
-            'setBar',
-            $binding->getSetter()
-        );
-        $this->assertEquals(
-            'string',
-            $binding->getType()
-        );
-        $this->assertEquals(
-            2,
-            $binding->getMin()
-        );
-        $this->assertEquals(
-            8,
-            $binding->getMax()
-        );
+        $binding->setGetter('getBar');
+        $binding->setSubCollection($subCollection);
+        $this->assertEquals('bar', $binding->getKey());
+        $this->assertEquals('setBar', $binding->getSetter());
+        $this->assertEquals('getBar', $binding->getGetter());
+        $this->assertEquals('string', $binding->getType());
+        $this->assertEquals($subCollection, $binding->getSubCollection());
+        $this->assertEquals(2, $binding->getMin());
+        $this->assertEquals(8, $binding->getMax());
     }
 
     public function testSerialize()
@@ -108,25 +85,10 @@ class BindingTest extends TestCase
         );
         $binding->unserialize($serialize);
 
-        $this->assertEquals(
-            'foo',
-            $binding->getKey()
-        );
-        $this->assertEquals(
-            'setFoo',
-            $binding->getSetter()
-        );
-        $this->assertEquals(
-            'string',
-            $binding->getType()
-        );
-        $this->assertEquals(
-            0,
-            $binding->getMin()
-        );
-        $this->assertEquals(
-            100,
-            $binding->getMax()
-        );
+        $this->assertEquals('foo', $binding->getKey());
+        $this->assertEquals('setFoo', $binding->getSetter());
+        $this->assertEquals('string', $binding->getType());
+        $this->assertEquals(0, $binding->getMin());
+        $this->assertEquals(100, $binding->getMax());
     }
 }

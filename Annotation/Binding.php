@@ -38,6 +38,13 @@ class Binding
     public $setter;
 
     /**
+     * Entity getter method name
+     *
+     * @var string|null
+     */
+    public $getter;
+
+    /**
      * Entity property type
      *
      * @var string|null
@@ -68,17 +75,9 @@ class Binding
     public function __construct(array $data)
     {
         foreach ($data as $key => $value) {
-            $noUnderscoreKey = str_replace(
-                '_',
-                '',
-                $key
-            );
+            $noUnderscoreKey = str_replace('_', '', $key);
             $method = 'set' . $noUnderscoreKey;
-            if (!method_exists(
-                $this,
-                $method
-            )
-            ) {
+            if (!method_exists($this, $method)) {
                 $message = sprintf(
                     'Unknown property "%s" on annotation "%s".',
                     $key,
@@ -202,6 +201,29 @@ class Binding
     public function setMax($max): self
     {
         $this->max = $max;
+        return $this;
+    }
+
+    /**
+     * Getter for getter
+     *
+     * @return string|null
+     */
+    public function getGetter(): ?string
+    {
+        return $this->getter;
+    }
+
+    /**
+     * Setter for getter
+     *
+     * @param string|null $getter
+     *
+     * @return self
+     */
+    public function setGetter(?string $getter): self
+    {
+        $this->getter = $getter;
         return $this;
     }
 }

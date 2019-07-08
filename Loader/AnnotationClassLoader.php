@@ -26,6 +26,7 @@ use Symfony\Component\Config\Resource\FileResource;
  */
 class AnnotationClassLoader implements LoaderInterface
 {
+    public const SCALAR_TYPES = ['integer', 'float', 'string', 'boolean', 'array'];
     /**
      * Reader for annotation
      *
@@ -44,6 +45,7 @@ class AnnotationClassLoader implements LoaderInterface
      * AnnotationClassLoader constructor.
      *
      * @param Reader $reader
+     * @param $bindingAnnotationClass
      */
     public function __construct(Reader $reader, $bindingAnnotationClass)
     {
@@ -95,6 +97,7 @@ class AnnotationClassLoader implements LoaderInterface
         }
         $collection = new BindingCollection();
         $collection->addResource(new FileResource($class->getFileName()));
+        $methods = [];
         foreach ($class->getMethods() as $reflectionMethod) {
             $methods[] = $reflectionMethod->getName();
         }
@@ -130,20 +133,24 @@ class AnnotationClassLoader implements LoaderInterface
         \ReflectionProperty $property
     ) {
         $propertyName = $property->getName();
-        $method = $annot->getSetter() ?? 'set' . ucfirst($propertyName);
-        if (in_array(
-            $method,
-            $methods
-        )
-        ) {
+        $setter = $annot->getSetter() ?? 'set' . ucfirst($propertyName);
+        $getter = $annot->getGetter() ?? 'get' . ucfirst($propertyName);
+        if (in_array($setter, $methods)) {
+            $subCollection = null;
+            if (self::isNotScalar($annot->getType())) {
+                $subLoader = new AnnotationClassLoader($this->reader, $this->bindingAnnotationClass);
+                $subCollection = $subLoader->load($annot->getType());
+            }
             $binding = new Binding(
                 $annot->getKey() ?? $propertyName,
-                $method,
+                $setter,
                 $annot->getType(),
                 $annot->getMin(),
-                $annot->getMax()
+                $annot->getMax(),
+                $subCollection,
+                $getter
             );
-            $collection->add($binding);
+            $collection->addBinding($binding);
         }
     }
 
@@ -185,5 +192,17 @@ class AnnotationClassLoader implements LoaderInterface
     public function setResolver(LoaderResolverInterface $resolver)
     {
         return;
+    }
+
+    /**
+     * isNotScalar
+     *
+     * @param string|null $type
+     *
+     * @return bool
+     */
+    public static function isNotScalar(?string $type = null): bool
+    {
+        return (!empty($type) && !in_array($type, self::SCALAR_TYPES));
     }
 }
