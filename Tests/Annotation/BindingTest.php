@@ -70,5 +70,4 @@ class BindingTest extends TestCase
         $this->assertEquals(1, $binding->getMin());
         $this->assertEquals(10, $binding->getMax());
     }
-
 }
