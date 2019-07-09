@@ -67,20 +67,21 @@ class Binder implements BinderInterface
      *
      * @param LoaderInterface $loader
      * @param EntityManagerInterface $em
-     * @param int $bindingMaxRecursiveCalls
+     * @param $bindingMaxRecursiveCalls
      * @param LoggerInterface|null $logger
      */
     public function __construct(
         LoaderInterface $loader,
         EntityManagerInterface $em,
-        int $bindingMaxRecursiveCalls,
+        $bindingMaxRecursiveCalls,
         LoggerInterface $logger = null
     ) {
         $this->loader = $loader;
-        $this->logger = $logger;
         $this->em = $em;
-        $this->bindingMaxRecursiveCalls = $bindingMaxRecursiveCalls;
+        $this->bindingMaxRecursiveCalls = intval($bindingMaxRecursiveCalls);
+        $this->logger = $logger;
     }
+
 
     /**
      * setResource

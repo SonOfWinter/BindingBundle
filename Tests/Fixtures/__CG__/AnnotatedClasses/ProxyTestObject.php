@@ -2,7 +2,6 @@
 
 namespace SOW\BindingBundle\Tests\Fixtures\__CG__\AnnotatedClasses;
 
-
 use Doctrine\Common\Persistence\Proxy;
 use SOW\BindingBundle\Annotation as Binding;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject;

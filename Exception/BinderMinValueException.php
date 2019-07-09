@@ -77,4 +77,3 @@ class BinderMinValueException extends BinderException
         return $this->min;
     }
 }
-

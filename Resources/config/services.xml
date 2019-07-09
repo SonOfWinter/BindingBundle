@@ -20,7 +20,7 @@
         <service id="sow_binding.binder" class="SOW\BindingBundle\Binder" public="true">
             <argument type="service" id="sow_binding.annotation_class_loader" />
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument key="$bindingMaxRecursiveCalls">%sow_binding.max_recursive_calls%</argument>
+            <argument>%sow_binding.max_recursive_calls%</argument>
             <argument type="service" id="logger" />
         </service>
 
