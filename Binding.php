@@ -57,6 +57,11 @@ class Binding implements \Serializable
     private $subCollection;
 
     /**
+     * @var bool
+     */
+    private $nullable = false;
+
+    /**
      * Binding constructor.
      *
      * @param string $key
@@ -66,6 +71,7 @@ class Binding implements \Serializable
      * @param int $max
      * @param BindingCollection $subCollection
      * @param string|null $getter
+     * @param bool|null $nullable
      */
     public function __construct(
         string $key,
@@ -74,7 +80,8 @@ class Binding implements \Serializable
         ?int $min = null,
         ?int $max = null,
         ?BindingCollection $subCollection = null,
-        ?string $getter = ''
+        ?string $getter = '',
+        ?bool $nullable = false
     ) {
         $this->key = $key;
         $this->setter = $setter;
@@ -83,6 +90,7 @@ class Binding implements \Serializable
         $this->max = $max;
         $this->subCollection = $subCollection;
         $this->getter = $getter;
+        $this->nullable = $nullable;
     }
 
     /**
@@ -98,7 +106,8 @@ class Binding implements \Serializable
                 'getter' => $this->getter,
                 'type' => $this->type,
                 'min' => $this->min,
-                'max' => $this->max
+                'max' => $this->max,
+                'nullable' => $this->nullable
             ]
         );
     }
@@ -113,8 +122,9 @@ class Binding implements \Serializable
         $this->setter = $data['setter'];
         $this->getter = $data['getter'];
         $this->type = $data['type'];
-        $this->min = $data['min'];
-        $this->max = $data['max'];
+        $this->min = intval($data['min']);
+        $this->max = intval($data['max']);
+        $this->nullable = boolval($data['nullable']);
     }
 
     /**
@@ -275,6 +285,29 @@ class Binding implements \Serializable
     public function setGetter(string $getter): self
     {
         $this->getter = $getter;
+        return $this;
+    }
+
+    /**
+     * Getter for nullable
+     *
+     * @return bool
+     */
+    public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    /**
+     * Setter for nullable
+     *
+     * @param bool $nullable
+     *
+     * @return self
+     */
+    public function setNullable(bool $nullable): self
+    {
+        $this->nullable = $nullable;
         return $this;
     }
 

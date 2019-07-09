@@ -32,7 +32,8 @@ class BindingTest extends TestCase
             0,
             100,
             null,
-            'getFoo'
+            'getFoo',
+            true
         );
         $this->assertEquals('foo', $binding->getKey());
         $this->assertEquals('setFoo', $binding->getSetter());
@@ -42,6 +43,7 @@ class BindingTest extends TestCase
         $this->assertEquals('foo', $binding->__toString());
         $this->assertEquals(0, $binding->getMin());
         $this->assertEquals(100, $binding->getMax());
+        $this->assertTrue($binding->isNullable());
     }
 
     public function testSetter()
@@ -58,6 +60,7 @@ class BindingTest extends TestCase
         $binding->setMin(2);
         $binding->setGetter('getBar');
         $binding->setSubCollection($subCollection);
+        $binding->setNullable(true);
         $this->assertEquals('bar', $binding->getKey());
         $this->assertEquals('setBar', $binding->getSetter());
         $this->assertEquals('getBar', $binding->getGetter());
@@ -65,6 +68,7 @@ class BindingTest extends TestCase
         $this->assertEquals($subCollection, $binding->getSubCollection());
         $this->assertEquals(2, $binding->getMin());
         $this->assertEquals(8, $binding->getMax());
+        $this->assertTrue($binding->isNullable());
     }
 
     public function testSerialize()
@@ -74,7 +78,10 @@ class BindingTest extends TestCase
             'setFoo',
             'string',
             0,
-            100
+            100,
+            null,
+            'getFoo',
+            true
         );
         $serialize = $binding->serialize();
 
@@ -87,8 +94,10 @@ class BindingTest extends TestCase
 
         $this->assertEquals('foo', $binding->getKey());
         $this->assertEquals('setFoo', $binding->getSetter());
+        $this->assertEquals('getFoo', $binding->getGetter());
         $this->assertEquals('string', $binding->getType());
         $this->assertEquals(0, $binding->getMin());
         $this->assertEquals(100, $binding->getMax());
+        $this->assertTrue($binding->isNullable());
     }
 }

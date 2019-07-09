@@ -19,6 +19,7 @@ use SOW\BindingBundle\Exception\BinderConfigurationException;
 use SOW\BindingBundle\Exception\BinderIncludeException;
 use SOW\BindingBundle\Exception\BinderMaxValueException;
 use SOW\BindingBundle\Exception\BinderMinValueException;
+use SOW\BindingBundle\Exception\BinderNullableException;
 use SOW\BindingBundle\Exception\BinderProxyClassException;
 use SOW\BindingBundle\Exception\BinderRecursiveException;
 use SOW\BindingBundle\Exception\BinderTypeException;
@@ -197,6 +198,9 @@ class Binder implements BinderInterface
                         continue;
                     }
                     $value = $params[$binding->getKey()];
+                    if (!$binding->isNullable()) {
+                        $this->checkNullValue($binding->getKey(), $value);
+                    }
                     if (!empty($binding->getType())) {
                         $this->checkType($binding, $value);
                     }
@@ -269,7 +273,7 @@ class Binder implements BinderInterface
     {
         $valueType = gettype($value);
         $annotType = $binding->getType();
-        if (!AnnotationClassLoader::isNotScalar($annotType) && $valueType !== $annotType) {
+        if (AnnotationClassLoader::isScalar($annotType) && $valueType !== $annotType && $value !== null) {
             throw new BinderTypeException($annotType, $valueType, $binding->getKey());
         }
     }
@@ -327,6 +331,23 @@ class Binder implements BinderInterface
             if (count($value) > $max) {
                 throw new BinderMaxValueException($key, $max);
             }
+        }
+    }
+
+    /**
+     * checkNullValue
+     *
+     * @param $key
+     * @param $value
+     *
+     * @throws BinderNullableException
+     *
+     * @return void
+     */
+    protected function checkNullValue($key, $value)
+    {
+        if ($value === null) {
+            throw new BinderNullableException($key);
         }
     }
 }

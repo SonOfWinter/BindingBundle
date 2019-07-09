@@ -78,14 +78,14 @@ class AnnotationClassLoader implements LoaderInterface
      * Load Binding data from class
      *
      * @param mixed $class
-     * @param null  $type
-     *
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * @param null $type
      *
      * @return BindingCollection
+     * @throws \ReflectionException
+     *
+     * @throws \InvalidArgumentException
      */
-    public function load($class, $type = null) : BindingCollection
+    public function load($class, $type = null): BindingCollection
     {
         if (!class_exists($class)) {
             throw new \InvalidArgumentException(
@@ -131,10 +131,10 @@ class AnnotationClassLoader implements LoaderInterface
     /**
      * Add binding class to BindingCollection
      *
-     * @param BindingCollection                     $collection
+     * @param BindingCollection $collection
      * @param \SOW\BindingBundle\Annotation\Binding $annot
-     * @param array                                 $methods
-     * @param \ReflectionProperty                   $property
+     * @param array $methods
+     * @param \ReflectionProperty $property
      *
      * @return void
      */
@@ -160,7 +160,8 @@ class AnnotationClassLoader implements LoaderInterface
                 $annot->getMin(),
                 $annot->getMax(),
                 $subCollection,
-                $getter
+                $getter,
+                $annot->isNullable()
             );
             $collection->addBinding($binding);
         }
@@ -170,7 +171,7 @@ class AnnotationClassLoader implements LoaderInterface
      * Check if resource is supported
      *
      * @param mixed $resource
-     * @param null  $type
+     * @param null $type
      *
      * @return bool
      */
@@ -216,5 +217,17 @@ class AnnotationClassLoader implements LoaderInterface
     public static function isNotScalar(?string $type = null): bool
     {
         return (!empty($type) && !in_array($type, self::SCALAR_TYPES));
+    }
+
+    /**
+     * isNotScalar
+     *
+     * @param string|null $type
+     *
+     * @return bool
+     */
+    public static function isScalar(?string $type = null): bool
+    {
+        return !self::isNotScalar($type);
     }
 }

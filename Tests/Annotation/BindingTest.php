@@ -30,38 +30,23 @@ class BindingTest extends TestCase
         new Binding(['foo' => 'bar']);
     }
 
-    public function testValidNameSetterAndTypeParameter()
+    public function testValidNameSetterAndTypeParameters()
     {
         $binding = new Binding(
             ['key' => 'test', 'setter' => 'getTest', 'type' => 'string']
         );
         $this->assertTrue($binding instanceof Binding);
-        $this->assertEquals(
-            'test',
-            $binding->getKey()
-        );
-        $this->assertEquals(
-            'getTest',
-            $binding->getSetter()
-        );
-        $this->assertEquals(
-            'string',
-            $binding->getType()
-        );
+        $this->assertEquals('test', $binding->getKey());
+        $this->assertEquals('getTest', $binding->getSetter());
+        $this->assertEquals('string', $binding->getType());
     }
 
-    public function testValidNameAndSetterParameter()
+    public function testValidNameAndSetterParameters()
     {
         $binding = new Binding(['key' => 'test', 'setter' => 'getTest']);
         $this->assertTrue($binding instanceof Binding);
-        $this->assertEquals(
-            'test',
-            $binding->getKey()
-        );
-        $this->assertEquals(
-            'getTest',
-            $binding->getSetter()
-        );
+        $this->assertEquals('test', $binding->getKey());
+        $this->assertEquals('getTest', $binding->getSetter());
         $this->assertNull($binding->getType());
     }
 
@@ -69,11 +54,21 @@ class BindingTest extends TestCase
     {
         $binding = new Binding(['key' => 'test']);
         $this->assertTrue($binding instanceof Binding);
-        $this->assertEquals(
-            'test',
-            $binding->getKey()
-        );
+        $this->assertEquals('test', $binding->getKey());
         $this->assertNull($binding->getSetter());
         $this->assertNull($binding->getType());
     }
+
+    public function testValidMinMaxAndNullableParameters()
+    {
+        $binding = new Binding(
+            ['key' => 'test', 'nullable' => true, 'min' => 1, 'max' => 10]
+        );
+        $this->assertTrue($binding instanceof Binding);
+        $this->assertEquals('test', $binding->getKey());
+        $this->assertTrue($binding->isNullable());
+        $this->assertEquals(1, $binding->getMin());
+        $this->assertEquals(10, $binding->getMax());
+    }
+
 }

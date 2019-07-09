@@ -66,6 +66,13 @@ class Binding
     public $max;
 
     /**
+     * If value can be null
+     *
+     * @var bool
+     */
+    public $nullable = false;
+
+    /**
      * Binding constructor.
      *
      * @param array $data
@@ -224,6 +231,29 @@ class Binding
     public function setGetter(?string $getter): self
     {
         $this->getter = $getter;
+        return $this;
+    }
+
+    /**
+     * Getter for nullable
+     *
+     * @return bool
+     */
+    public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    /**
+     * Setter for nullable
+     *
+     * @param bool $nullable
+     *
+     * @return self
+     */
+    public function setNullable(bool $nullable): self
+    {
+        $this->nullable = $nullable;
         return $this;
     }
 }

@@ -20,6 +20,7 @@ use SOW\BindingBundle\Exception\BinderMaxValueException;
 use SOW\BindingBundle\Exception\BinderMinValueException;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use SOW\BindingBundle\Tests\Fixtures\__CG__\AnnotatedClasses\ProxyTestObject;
+use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestNullableObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedMinMaxObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject;
@@ -55,30 +56,12 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            $dataArray['firstname'],
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray['userEmail'],
-            $testObject->getUserEmail()
-        );
-        $this->assertEquals(
-            $dataArray['subObject']['firstname'],
-            $testObject->getSubObject()->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray['subObject']['lastname'],
-            $testObject->getSubObject()->getLastname()
-        );
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals($dataArray['userEmail'], $testObject->getUserEmail());
+        $this->assertEquals($dataArray['subObject']['firstname'], $testObject->getSubObject()->getFirstname());
+        $this->assertEquals($dataArray['subObject']['lastname'], $testObject->getSubObject()->getLastname());
         $this->assertEquals(
             $dataArray['subObject']['subSubObject']['city'],
             $testObject->getSubObject()->getSubSubObject()->getCity()
@@ -87,10 +70,7 @@ class BinderTest extends TestCase
             $dataArray['subObject']['subSubObject']['country'],
             $testObject->getSubObject()->getSubSubObject()->getCountry()
         );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     /**
@@ -117,10 +97,7 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 0);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
+        $bindingService->bind($testObject, $dataArray);
     }
 
     public function testBinderWithOneProperty()
@@ -133,26 +110,11 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getUserEmail()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertNull($testObject->getFirstname());
+        $this->assertNull($testObject->getUserEmail());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     /**
@@ -176,10 +138,7 @@ class BinderTest extends TestCase
         $bindingService = new Binder($loader, $em, 10);
         $bindingService->setResource(get_class($testObject));
         $collection = $bindingService->getBindingCollection();
-        $this->assertEquals(
-            $collection,
-            $bindingService->getBindingCollection()
-        );
+        $this->assertEquals($collection, $bindingService->getBindingCollection());
     }
 
     public function testBinderWithAllTypedProperties()
@@ -194,26 +153,11 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            $dataArray['firstname'],
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray['age'],
-            $testObject->getAge()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals($dataArray['age'], $testObject->getAge());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     /**
@@ -232,10 +176,7 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
+        $bindingService->bind($testObject, $dataArray);
     }
 
     public function testBinderWithProxyResource()
@@ -258,26 +199,11 @@ class BinderTest extends TestCase
         $em->expects($this->exactly(2))->method("getClassMetadata")->will($this->returnValue($metadata));
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            $dataArray['firstname'],
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray["subObject"]['lastname'],
-            $testObject->getSubObject()->getLastname()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals($dataArray["subObject"]['lastname'], $testObject->getSubObject()->getLastname());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     public function testBinderWithExcludeProperties()
@@ -298,19 +224,10 @@ class BinderTest extends TestCase
             [],
             ['firstname']
         );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
         $this->assertNull($testObject->getFirstname());
-        $this->assertEquals(
-            $dataArray['userEmail'],
-            $testObject->getUserEmail()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $this->assertEquals($dataArray['userEmail'], $testObject->getUserEmail());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     public function testBinderWithWrongExcludeProperties()
@@ -331,22 +248,10 @@ class BinderTest extends TestCase
             [],
             ['wrongValue']
         );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            $dataArray['firstname'],
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray['userEmail'],
-            $testObject->getUserEmail()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals($dataArray['userEmail'], $testObject->getUserEmail());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     public function testBinderWithIncludeProperties()
@@ -361,27 +266,11 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray,
-            ['lastname', 'firstname']
-        );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            $dataArray['firstname'],
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray['userEmail'],
-            $testObject->getUserEmail()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $bindingService->bind($testObject, $dataArray, ['lastname', 'firstname']);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals($dataArray['userEmail'], $testObject->getUserEmail());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     /**
@@ -436,30 +325,12 @@ class BinderTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
-        $bindingService->bind(
-            $testObject,
-            $dataArray
-        );
-        $this->assertEquals(
-            $dataArray['lastname'],
-            $testObject->getLastname()
-        );
-        $this->assertEquals(
-            $dataArray['firstname'],
-            $testObject->getFirstname()
-        );
-        $this->assertEquals(
-            $dataArray['age'],
-            $testObject->getAge()
-        );
-        $this->assertEquals(
-            $dataArray['letterList'],
-            $testObject->getLetterList()
-        );
-        $this->assertEquals(
-            null,
-            $testObject->getNotBindProperty()
-        );
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertEquals($dataArray['firstname'], $testObject->getFirstname());
+        $this->assertEquals($dataArray['age'], $testObject->getAge());
+        $this->assertEquals($dataArray['letterList'], $testObject->getLetterList());
+        $this->assertNull($testObject->getNotBindProperty());
     }
 
     public function testBinderWithMaxIntPropertyError()
@@ -476,10 +347,7 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
         try {
-            $bindingService->bind(
-                $testObject,
-                $dataArray
-            );
+            $bindingService->bind($testObject, $dataArray);
             $this->fail('BinderMaxValueException must be throw');
         } catch (BinderMaxValueException $e) {
             $this->assertEquals(100, $e->getMax());
@@ -502,10 +370,7 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
         try {
-            $bindingService->bind(
-                $testObject,
-                $dataArray
-            );
+            $bindingService->bind($testObject, $dataArray);
             $this->fail('BinderMinValueException must be throw');
         } catch (BinderMinValueException $e) {
             $this->assertEquals(0, $e->getMin());
@@ -528,10 +393,7 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
         try {
-            $bindingService->bind(
-                $testObject,
-                $dataArray
-            );
+            $bindingService->bind($testObject, $dataArray);
             $this->fail('BinderMaxValueException must be throw');
         } catch (BinderMaxValueException $e) {
             $this->assertEquals(20, $e->getMax());
@@ -554,10 +416,7 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
         try {
-            $bindingService->bind(
-                $testObject,
-                $dataArray
-            );
+            $bindingService->bind($testObject, $dataArray);
             $this->fail('BinderMinValueException must be throw');
         } catch (BinderMinValueException $e) {
             $this->assertEquals(2, $e->getMin());
@@ -581,10 +440,7 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
         try {
-            $bindingService->bind(
-                $testObject,
-                $dataArray
-            );
+            $bindingService->bind($testObject, $dataArray);
             $this->fail('BinderMaxValueException must be throw');
         } catch (BinderMaxValueException $e) {
             $this->assertEquals(3, $e->getMax());
@@ -607,15 +463,46 @@ class BinderTest extends TestCase
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
         $bindingService = new Binder($loader, $em, 10);
         try {
-            $bindingService->bind(
-                $testObject,
-                $dataArray
-            );
+            $bindingService->bind($testObject, $dataArray);
             $this->fail('BinderMinValueException must be throw');
         } catch (BinderMinValueException $e) {
             $this->assertEquals(1, $e->getMin());
             $this->assertEquals('letterList', $e->getKey());
             $this->assertEquals('letterList must have a value more than : 1', $e->getMessage());
         }
+    }
+
+    /**
+     * @expectedException SOW\BindingBundle\Exception\BinderNullableException
+     * @expectedExceptionMessage Key lastname cannot be null
+     */
+    public function testBinderWithAllNullProperties()
+    {
+        $dataArray = [
+            'lastname' => null,
+            'firstname' => null
+        ];
+        $testObject = new TestNullableObject();
+        $reader = new AnnotationReader();
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
+        $bindingService->bind($testObject, $dataArray);
+    }
+
+    public function testBinderWithSomeNullProperties()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => null
+        ];
+        $testObject = new TestNullableObject();
+        $reader = new AnnotationReader();
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
+        $bindingService->bind($testObject, $dataArray);
+        $this->assertEquals($dataArray['lastname'], $testObject->getLastname());
+        $this->assertNull($dataArray['firstname']);
     }
 }

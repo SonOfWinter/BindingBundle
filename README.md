@@ -138,7 +138,7 @@ new in v0.6 child binder
 A child entity can be binding when the type is set with the entity namespace.
 
 The getter is use to get the sub entity.
-If the sub entity is null, it try to create him (without parameter), if fail the binber skip sub entity.
+If the sub entity is null, it try to create him (without parameter), if fail the binder skip sub entity.
 So if the constructor need parameters, the sub entity must be defined before the binder action. 
 
 Exemple of data :
@@ -156,8 +156,16 @@ $data = [
 ];
 ```
 
-Next / Ideas
-============
+new in v0.7 Nullable
+------------------------
 
-* doctrine OneToMany
-* doctrine ManyToMany
+```php
+    /** 
+     * @var Test
+     * @Binding(nullable=true)
+     */
+    private $test;
+```
+
+The nullable property define if a null value can be set to entity's property.
+The property default value is false. 
