@@ -12,6 +12,7 @@
 
 namespace SOW\BindingBundle;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\Proxy;
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
@@ -19,6 +20,7 @@ use SOW\BindingBundle\Exception\BinderIncludeException;
 use SOW\BindingBundle\Exception\BinderMaxValueException;
 use SOW\BindingBundle\Exception\BinderMinValueException;
 use SOW\BindingBundle\Exception\BinderProxyClassException;
+use SOW\BindingBundle\Exception\BinderRecursiveException;
 use SOW\BindingBundle\Exception\BinderTypeException;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -51,15 +53,33 @@ class Binder implements BinderInterface
     protected $collection;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
+     * @var int
+     */
+    private $bindingMaxRecursiveCalls;
+
+    /**
      * Binder constructor.
      *
      * @param LoaderInterface $loader
+     * @param EntityManagerInterface $em
+     * @param int $bindingMaxRecursiveCalls
      * @param LoggerInterface|null $logger
      */
-    public function __construct(LoaderInterface $loader, LoggerInterface $logger = null)
-    {
+    public function __construct(
+        LoaderInterface $loader,
+        EntityManagerInterface $em,
+        int $bindingMaxRecursiveCalls,
+        LoggerInterface $logger = null
+    ) {
         $this->loader = $loader;
         $this->logger = $logger;
+        $this->em = $em;
+        $this->bindingMaxRecursiveCalls = $bindingMaxRecursiveCalls;
     }
 
     /**
@@ -120,6 +140,7 @@ class Binder implements BinderInterface
      * @throws BinderIncludeException
      * @throws BinderMaxValueException
      * @throws BinderMinValueException
+     * @throws BinderRecursiveException
      *
      * @return void
      */
@@ -138,6 +159,7 @@ class Binder implements BinderInterface
             $setter = $binding->getSetter();
             if (AnnotationClassLoader::isNotScalar($binding->getType())) {
                 $subObject = $object->$getter();
+                // if sub-object not yet created, try create it with empty constructor
                 if (empty($subObject)) {
                     try {
                         $type = $binding->getType();
@@ -150,8 +172,22 @@ class Binder implements BinderInterface
                     }
                 }
                 if (!empty($subObject) && array_key_exists($binding->getKey(), $params)) {
+                    // get real object and replace proxy
+                    if ($subObject instanceof Proxy) {
+                        $realClassName = $this->em->getClassMetadata(get_class($subObject))->rootEntityName;
+                        $subObject = $this->em->find($realClassName, $subObject->getId());
+                        if ($subObject === null) {
+                            throw new BinderProxyClassException();
+                        }
+                    }
+                    $this->bindingMaxRecursiveCalls--;
+                    if ($this->bindingMaxRecursiveCalls < 0) {
+                        throw new BinderRecursiveException();
+                    }
                     $this->bind($subObject, $params[$binding->getKey()]);
+                    $this->bindingMaxRecursiveCalls--;
                     $object->$setter($subObject);
+                    // after bind sub-object, redefine resource with parent object
                     $this->checkResource($object);
                 }
             } else {
@@ -208,10 +244,13 @@ class Binder implements BinderInterface
     protected function checkResource($object)
     {
         if ($this->resource !== get_class($object)) {
-            $this->setResource(get_class($object));
-        }
-        if (strpos($this->resource, Proxy::MARKER) !== false) {
-            throw new BinderProxyClassException();
+            if ($object instanceof Proxy) {
+                //throw new BinderProxyClassException();
+                $this->setResource($this->em->getClassMetadata(get_class($object))->rootEntityName);
+                $object->__load();
+            } else {
+                $this->setResource(get_class($object));
+            }
         }
     }
 

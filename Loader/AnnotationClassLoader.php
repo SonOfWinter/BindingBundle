@@ -12,6 +12,8 @@
 
 namespace SOW\BindingBundle\Loader;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Proxy\Proxy;
 use SOW\BindingBundle\Binding;
 use SOW\BindingBundle\BindingCollection;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -42,14 +44,21 @@ class AnnotationClassLoader implements LoaderInterface
     protected $bindingAnnotationClass;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * AnnotationClassLoader constructor.
      *
      * @param Reader $reader
+     * @param EntityManagerInterface $em
      * @param $bindingAnnotationClass
      */
-    public function __construct(Reader $reader, $bindingAnnotationClass)
+    public function __construct(Reader $reader, EntityManagerInterface $em, $bindingAnnotationClass)
     {
         $this->reader = $reader;
+        $this->em = $em;
         $this->bindingAnnotationClass = $bindingAnnotationClass;
     }
 
@@ -85,6 +94,9 @@ class AnnotationClassLoader implements LoaderInterface
                     $class
                 )
             );
+        }
+        if (strpos($class, Proxy::MARKER) !== false) {
+            $class = $this->em->getClassMetadata($class)->rootEntityName;
         }
         $class = new \ReflectionClass($class);
         if ($class->isAbstract()) {
@@ -138,7 +150,7 @@ class AnnotationClassLoader implements LoaderInterface
         if (in_array($setter, $methods)) {
             $subCollection = null;
             if (self::isNotScalar($annot->getType())) {
-                $subLoader = new AnnotationClassLoader($this->reader, $this->bindingAnnotationClass);
+                $subLoader = new AnnotationClassLoader($this->reader, $this->em, $this->bindingAnnotationClass);
                 $subCollection = $subLoader->load($annot->getType());
             }
             $binding = new Binding(

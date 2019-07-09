@@ -13,6 +13,7 @@
 namespace SOW\BindingBundle\Tests\Loader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
@@ -62,9 +63,10 @@ class AnnotationClassLoaderTest extends TestCase
 
     public function getClassLoader($reader)
     {
+        $em = $this->createMock(EntityManagerInterface::class);
         return $this->getMockBuilder(
             'SOW\BindingBundle\Loader\AnnotationClassLoader'
-        )->setConstructorArgs([$reader, $this->bindingAnnotationClass])
+        )->setConstructorArgs([$reader, $em, $this->bindingAnnotationClass])
             ->getMockForAbstractClass();
     }
 

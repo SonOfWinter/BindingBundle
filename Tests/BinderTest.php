@@ -13,6 +13,8 @@
 namespace SOW\BindingBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use SOW\BindingBundle\Binder;
 use SOW\BindingBundle\Exception\BinderMaxValueException;
 use SOW\BindingBundle\Exception\BinderMinValueException;
@@ -50,8 +52,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray
@@ -90,6 +93,36 @@ class BinderTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException SOW\BindingBundle\Exception\BinderRecursiveException
+     */
+    public function testBinderWithAllPropertiesButMaxRecursiveReached()
+    {
+        $dataArray = [
+            'lastname' => 'Bullock',
+            'firstname' => 'Ryan',
+            'userEmail' => 'r.bullock@mail.com',
+            'age' => 25,
+            'subObject' => [
+                'lastname' => 'Bullock',
+                'firstname' => 'Dale',
+                'subSubObject' => [
+                    'city' => 'Paris',
+                    'country' => 'France'
+                ]
+            ]
+        ];
+        $testObject = new TestObject();
+        $reader = new AnnotationReader();
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 0);
+        $bindingService->bind(
+            $testObject,
+            $dataArray
+        );
+    }
+
     public function testBinderWithOneProperty()
     {
         $dataArray = [
@@ -97,8 +130,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray
@@ -127,8 +161,9 @@ class BinderTest extends TestCase
     public function testGetCollectionWithoutResource()
     {
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->getBindingCollection();
     }
 
@@ -136,8 +171,9 @@ class BinderTest extends TestCase
     {
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->setResource(get_class($testObject));
         $collection = $bindingService->getBindingCollection();
         $this->assertEquals(
@@ -155,8 +191,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray
@@ -192,33 +229,54 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray
         );
     }
 
-
-    /**
-     * @expectedException SOW\BindingBundle\Exception\BinderProxyClassException
-     * @expectedExceptionMessage Don't use Doctrine Proxy class with Binder
-     */
     public function testBinderWithProxyResource()
     {
         $dataArray = [
             'lastname' => 'Bullock',
             'firstname' => 5.7,
-            'age' => true
+            'age' => true,
+            'subObject' => [
+                'lastname' => 'Bullock',
+            ]
         ];
         $testObject = new ProxyTestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $metadata = $this->getMockBuilder(ClassMetadata::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $metadata->rootEntityName = TestObject::class;
+        $em->expects($this->exactly(2))->method("getClassMetadata")->will($this->returnValue($metadata));
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray
+        );
+        $this->assertEquals(
+            $dataArray['lastname'],
+            $testObject->getLastname()
+        );
+        $this->assertEquals(
+            $dataArray['firstname'],
+            $testObject->getFirstname()
+        );
+        $this->assertEquals(
+            $dataArray["subObject"]['lastname'],
+            $testObject->getSubObject()->getLastname()
+        );
+        $this->assertEquals(
+            null,
+            $testObject->getNotBindProperty()
         );
     }
 
@@ -231,8 +289,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray,
@@ -263,8 +322,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray,
@@ -298,8 +358,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray,
@@ -336,8 +397,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray,
@@ -349,8 +411,9 @@ class BinderTest extends TestCase
     {
         $testObject = new TestObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $result = $bindingService->getKeys($testObject);
         $this->assertEquals(4, count($result));
         $this->assertTrue(in_array('lastname', $result));
@@ -370,8 +433,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         $bindingService->bind(
             $testObject,
             $dataArray
@@ -408,8 +472,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         try {
             $bindingService->bind(
                 $testObject,
@@ -433,8 +498,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         try {
             $bindingService->bind(
                 $testObject,
@@ -458,8 +524,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         try {
             $bindingService->bind(
                 $testObject,
@@ -483,8 +550,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         try {
             $bindingService->bind(
                 $testObject,
@@ -509,8 +577,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         try {
             $bindingService->bind(
                 $testObject,
@@ -534,8 +603,9 @@ class BinderTest extends TestCase
         ];
         $testObject = new TestTypedMinMaxObject();
         $reader = new AnnotationReader();
-        $loader = new AnnotationClassLoader($reader, $this->bindingAnnotationClass);
-        $bindingService = new Binder($loader);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
+        $bindingService = new Binder($loader, $em, 10);
         try {
             $bindingService->bind(
                 $testObject,
