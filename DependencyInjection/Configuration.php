@@ -25,14 +25,11 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @throws \RuntimeException
-     *
      * @return TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('sow_binding');
+        $treeBuilder = new TreeBuilder('sow_binding');
         return $treeBuilder;
     }
 }
