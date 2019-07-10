@@ -169,3 +169,8 @@ new in v0.7 Nullable
 
 The nullable property define if a null value can be set to entity's property.
 The property default value is false. 
+
+V0.7.1 update
+-------------
+
+Update Symfony minimum version 4.0 -> 4.1
