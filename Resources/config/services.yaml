@@ -1,0 +1,23 @@
+parameters:
+
+    sow_binding.annotation_class_name: 'SOW\BindingBundle\Annotation\Binding'
+    sow_binding.max_recursive_calls: 10
+
+services:
+
+    sow_binding.annotation_class_loader:
+        class: SOW\BindingBundle\Loader\AnnotationClassLoader
+        arguments:
+            - '@annotation_reader'
+            - '@doctrine.orm.entity_manager'
+            - '%sow_binding.annotation_class_name%'
+        public: false
+
+    sow_binding.binder:
+        class: SOW\BindingBundle\Binder
+        arguments:
+            - '@sow_binding.annotation_class_loader'
+            - '@doctrine.orm.entity_manager'
+            - '%sow_binding.max_recursive_calls%'
+            - '@logger'
+        public: true

@@ -31,9 +31,15 @@ class SOWBindingExtensionTest extends TestCase
         $container->expects($this->once())
             ->method('getReflectionClass')
             ->will($this->returnValue(new \ReflectionClass(Configuration::class)));
-        $container->expects($this->once())
+        $container->expects($this->any())
             ->method('getParameterBag')
             ->will($this->returnValue($paramBag));
+        $container->expects($this->exactly(2))
+            ->method('setParameter')
+            ->will($this->returnValue($paramBag));
+        $container->expects($this->once())
+            ->method('fileExists')
+            ->will($this->returnValue(true));
         $container->expects($this->once())
             ->method('setAlias');
         $extension = new SOWBindingExtension();

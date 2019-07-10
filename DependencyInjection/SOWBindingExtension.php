@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
  * Class SOWBindingExtension
@@ -39,19 +39,13 @@ class SOWBindingExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = $this->getConfiguration(
-            $configs,
-            $container
-        );
-        $this->processConfiguration(
-            $configuration,
-            $configs
-        );
-        $loader = new XmlFileLoader(
+        $configuration = $this->getConfiguration($configs, $container);
+        $this->processConfiguration($configuration, $configs);
+        $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')
         );
-        $loader->load('services.xml');
+        $loader->load('services.yaml');
         $container->setAlias(
             BinderInterface::class,
             new Alias('sow_binding.binder')
