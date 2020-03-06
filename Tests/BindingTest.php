@@ -14,7 +14,7 @@ namespace SOW\BindingBundle\Tests;
 
 use SOW\BindingBundle\Binding;
 use SOW\BindingBundle\BindingCollection;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class BindingTest

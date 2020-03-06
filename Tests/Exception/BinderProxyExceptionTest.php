@@ -12,7 +12,7 @@
 namespace SOW\BindingBundle\Tests\Exception;
 
 use SOW\BindingBundle\Exception\BinderProxyClassException;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class BinderProxyClassExceptionTest

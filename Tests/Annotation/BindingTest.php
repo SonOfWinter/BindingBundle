@@ -22,11 +22,9 @@ use SOW\BindingBundle\Annotation\Binding;
  */
 class BindingTest extends TestCase
 {
-    /**
-     * @expectedException \BadMethodCallException
-     */
     public function testInvalidRouteParameter()
     {
+        static::expectException('\BadMethodCallException');
         new Binding(['foo' => 'bar']);
     }
 

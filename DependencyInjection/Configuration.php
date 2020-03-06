@@ -29,7 +29,6 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('sow_binding');
-        return $treeBuilder;
+        return new TreeBuilder('sow_binding');
     }
 }

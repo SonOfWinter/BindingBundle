@@ -13,7 +13,7 @@
 namespace SOW\BindingBundle\Tests\DependencyInjection;
 
 use SOW\BindingBundle\DependencyInjection\Configuration;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 /**

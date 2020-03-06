@@ -15,6 +15,7 @@ namespace SOW\BindingBundle\Tests;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use PHPUnit\Framework\TestCase;
 use SOW\BindingBundle\Binder;
 use SOW\BindingBundle\Exception\BinderMaxValueException;
 use SOW\BindingBundle\Exception\BinderMinValueException;
@@ -24,7 +25,6 @@ use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestNullableObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedMinMaxObject;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
 /**
  * Class BinderTest
@@ -73,11 +73,9 @@ class BinderTest extends TestCase
         $this->assertNull($testObject->getNotBindProperty());
     }
 
-    /**
-     * @expectedException SOW\BindingBundle\Exception\BinderRecursiveException
-     */
     public function testBinderWithAllPropertiesButMaxRecursiveReached()
     {
+        static::expectException('SOW\BindingBundle\Exception\BinderRecursiveException');
         $dataArray = [
             'lastname' => 'Bullock',
             'firstname' => 'Ryan',
@@ -117,11 +115,9 @@ class BinderTest extends TestCase
         $this->assertNull($testObject->getNotBindProperty());
     }
 
-    /**
-     * @expectedException SOW\BindingBundle\Exception\BinderConfigurationException
-     */
     public function testGetCollectionWithoutResource()
     {
+        static::expectException('SOW\BindingBundle\Exception\BinderConfigurationException');
         $reader = new AnnotationReader();
         $em = $this->createMock(EntityManagerInterface::class);
         $loader = new AnnotationClassLoader($reader, $em, $this->bindingAnnotationClass);
@@ -160,12 +156,10 @@ class BinderTest extends TestCase
         $this->assertNull($testObject->getNotBindProperty());
     }
 
-    /**
-     * @expectedException SOW\BindingBundle\Exception\BinderTypeException
-     * @expectedExceptionMessage Wrong firstname parameter type. Expected : string, received : double
-     */
     public function testBinderWithWrongTypedProperties()
     {
+        static::expectException('SOW\BindingBundle\Exception\BinderTypeException');
+        static::expectExceptionMessage('Wrong firstname parameter type. Expected : string, received : double');
         $dataArray = [
             'lastname' => 'Bullock',
             'firstname' => 5.7,
@@ -273,12 +267,10 @@ class BinderTest extends TestCase
         $this->assertNull($testObject->getNotBindProperty());
     }
 
-    /**
-     * @expectedException SOW\BindingBundle\Exception\BinderIncludeException
-     * @expectedExceptionMessage Missing mandatory keys : phone
-     */
     public function testBinderWithMissingIncludeProperties()
     {
+        static::expectException('SOW\BindingBundle\Exception\BinderIncludeException');
+        static::expectExceptionMessage('Missing mandatory keys : phone');
         $dataArray = [
             'lastname' => 'Bullock',
             'firstname' => 'Ryan',
@@ -472,12 +464,10 @@ class BinderTest extends TestCase
         }
     }
 
-    /**
-     * @expectedException SOW\BindingBundle\Exception\BinderNullableException
-     * @expectedExceptionMessage Key lastname cannot be null
-     */
     public function testBinderWithAllNullProperties()
     {
+        static::expectException('SOW\BindingBundle\Exception\BinderNullableException');
+        static::expectExceptionMessage('Key lastname cannot be null');
         $dataArray = [
             'lastname' => null,
             'firstname' => null

@@ -6,3 +6,4 @@ symfony.lock
 /bin
 .phpunit
 /phpunit.xml
+/.phpunit.result.cache

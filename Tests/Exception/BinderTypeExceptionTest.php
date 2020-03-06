@@ -12,7 +12,7 @@
 namespace SOW\BindingBundle\Tests\Exception;
 
 use SOW\BindingBundle\Exception\BinderTypeException;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class BinderTypeExceptionTest
