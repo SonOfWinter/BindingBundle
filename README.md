@@ -174,3 +174,10 @@ V0.7.1 update
 -------------
 
 Update Symfony minimum version 4.0 -> 4.1
+
+
+V0.8.0 update
+-------------
+
+Update Symfony minimum version 4.1 -> 4.3 || 5.0
+
