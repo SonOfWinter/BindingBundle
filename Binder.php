@@ -203,7 +203,10 @@ class Binder implements BinderInterface
                         $this->checkNullValue($binding->getKey(), $value);
                     }
                     if (!empty($binding->getType())) {
-                        $this->checkType($binding, $value);
+                        $castValue = $this->checkType($binding, $value);
+                        if ($castValue !== null) {
+                            $value = $castValue;
+                        }
                     }
                     if ($binding->getMin() !== null) {
                         $this->checkMinValue($binding->getKey(), $value, $binding->getMin());
@@ -265,15 +268,19 @@ class Binder implements BinderInterface
      * @param $value
      *
      * @throws BinderTypeException
-     * @return void
+     * @return float|null
      */
-    protected function checkType(Binding $binding, $value)
+    protected function checkType(Binding $binding, $value): ?float
     {
         $valueType = gettype($value);
         $annotType = $binding->getType();
         if (AnnotationClassLoader::isScalar($annotType) && $valueType !== $annotType && $value !== null) {
+            if ($annotType === 'float' && $valueType === 'double') {
+                return floatval($value);
+            }
             throw new BinderTypeException($annotType, $valueType, $binding->getKey());
         }
+        return null;
     }
 
     /**
