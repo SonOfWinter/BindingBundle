@@ -1,8 +1,5 @@
 <?php
-
 /**
- * PHP Version 7.1, 7.2
- *
  * @package  SOW\BindingBundle\Exception
  * @author   Openium <contact@openium.fr>
  * @license  Openium All right reserved
@@ -21,10 +18,7 @@ class BinderNullableException extends BinderException
     public const MESSAGE = "Key %s cannot be null";
     public const CODE = 2914408;
 
-    /**
-     * @var string
-     */
-    private $key;
+    private string $key;
 
     /**
      * BinderProxyClassException constructor.
@@ -37,7 +31,7 @@ class BinderNullableException extends BinderException
     public function __construct(
         string $key = '',
         string $message = "",
-        $code = self::CODE,
+        int $code = self::CODE,
         \Throwable $previous = null
     ) {
         if ($message === "") {

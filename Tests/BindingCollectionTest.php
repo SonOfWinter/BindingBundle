@@ -1,9 +1,6 @@
 <?php
-
 /**
  * BinderBundle test
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Tests
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -125,8 +122,6 @@ class BindingCollectionTest extends TestCase
                 __DIR__ . '/Fixtures/AnnotatedClasses/AbstractClass.php'
             )
         );
-
-
         $collection1 = new BindingCollection();
         $collection1->addBinding(
             $b2 = new Binding(
@@ -145,7 +140,6 @@ class BindingCollectionTest extends TestCase
                 __DIR__ . '/Fixtures/AnnotatedClasses/TestObject.php'
             )
         );
-
         $collection2 = new BindingCollection();
         $collection2->addBinding(
             $b4 = new Binding(
@@ -154,23 +148,20 @@ class BindingCollectionTest extends TestCase
             )
         );
         $collection2->addResource($r2);
-
         $collection1->mergeCollection($collection2);
         $collection->mergeCollection($collection1);
-
         $collection->addBinding(
             $b5 = new Binding(
                 'username',
                 'setUsername'
             )
         );
-
         $this->assertSame(
             [
                 'lastname' => $b2,
                 'firstname' => $b3,
                 'email' => $b4,
-                'username' => $b5
+                'username' => $b5,
             ],
             $collection->all()
         );

@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Binder Interface
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -12,6 +9,7 @@
 
 namespace SOW\BindingBundle;
 
+use Exception;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
 use SOW\BindingBundle\Exception\BinderException;
 
@@ -24,11 +22,9 @@ interface BinderInterface
 {
     /**
      * @throws BinderConfigurationException
-     * @throws \Exception
-     *
-     * @return null|BindingCollection
+     * @throws Exception
      */
-    public function getBindingCollection();
+    public function getBindingCollection(): ?BindingCollection;
 
     /**
      * bind an array to entity
@@ -39,7 +35,6 @@ interface BinderInterface
      * @param array $exclude
      *
      * @throws BinderException
-     *
      * @return void
      */
     public function bind(&$object, array $params = [], array $include = [], array $exclude = []);

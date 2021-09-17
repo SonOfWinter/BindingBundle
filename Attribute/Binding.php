@@ -1,103 +1,74 @@
 <?php
+
 /**
- * Binding class
+ * Binding annotation class
  *
- * @package  SOW\BindingBundle
+ * @package  SOW\BindingBundle\Attribute
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
  * @link     https://github.com/SonOfWinter/BindingBundle
  */
 
-namespace SOW\BindingBundle;
+namespace SOW\BindingBundle\Attribute;
 
-use Serializable;
+use Attribute;
 
 /**
  * Class Binding
  *
- * @package SOW\BindingBundle
+ * @package SOW\BindingBundle\Attribute
  */
-class Binding implements Serializable
+#[Attribute(Attribute::TARGET_PROPERTY)]
+class Binding
 {
-    private string $key;
+    public string $key;
 
-    private string $setter;
+    public string $setter;
 
-    private string $getter;
+    public string $getter;
 
-    private ?string $type;
+    public ?string $type;
 
-    private ?int $min;
+    public ?int $min = null;
 
-    private ?int $max;
+    public ?int $max = null;
 
-    private ?BindingCollection $subCollection;
-
-    private ?bool $nullable;
+    public bool $nullable = false;
 
     /**
      * Binding constructor.
      *
      * @param string $key
-     * @param string $setter
+     * @param string|null $setter
+     * @param string|null $getter
      * @param string|null $type
      * @param int|null $min
      * @param int|null $max
-     * @param BindingCollection|null $subCollection
-     * @param string|null $getter
-     * @param bool|null $nullable
+     * @param bool $nullable
      */
     public function __construct(
-        string $key = '',
-        string $setter = '',
-        ?string $type = '',
+        string $key,
+        ?string $setter = null,
+        ?string $getter = null,
+        ?string $type = null,
         ?int $min = null,
         ?int $max = null,
-        ?BindingCollection $subCollection = null,
-        ?string $getter = '',
-        ?bool $nullable = false
+        bool $nullable = false,
     ) {
         $this->key = $key;
-        $this->setter = $setter;
+        if ($setter) {
+            $this->setter = $setter;
+        } else {
+            $this->setter = 'set' . ucwords($key);
+        }
+        if ($getter) {
+            $this->getter = $getter;
+        } else {
+            $this->getter = 'get' . ucwords($key);
+        }
         $this->type = $type;
         $this->min = $min;
         $this->max = $max;
-        $this->subCollection = $subCollection;
-        $this->getter = $getter;
         $this->nullable = $nullable;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
-    {
-        // TODO serialize subCollection
-        return serialize(
-            [
-                'key' => $this->key,
-                'setter' => $this->setter,
-                'getter' => $this->getter,
-                'type' => $this->type,
-                'min' => $this->min,
-                'max' => $this->max,
-                'nullable' => $this->nullable,
-            ]
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->key = $data['key'];
-        $this->setter = $data['setter'];
-        $this->getter = $data['getter'];
-        $this->type = $data['type'];
-        $this->min = intval($data['min']);
-        $this->max = intval($data['max']);
-        $this->nullable = boolval($data['nullable']);
     }
 
     /**
@@ -143,6 +114,29 @@ class Binding implements Serializable
     public function setSetter(string $setter): self
     {
         $this->setter = $setter;
+        return $this;
+    }
+
+    /**
+     * Getter for getter
+     *
+     * @return string
+     */
+    public function getGetter(): string
+    {
+        return $this->getter;
+    }
+
+    /**
+     * Setter for getter
+     *
+     * @param string $getter
+     *
+     * @return self
+     */
+    public function setGetter(string $getter): self
+    {
+        $this->getter = $getter;
         return $this;
     }
 
@@ -216,52 +210,6 @@ class Binding implements Serializable
     }
 
     /**
-     * Getter for subCollection
-     *
-     * @return BindingCollection|null
-     */
-    public function getSubCollection(): ?BindingCollection
-    {
-        return $this->subCollection;
-    }
-
-    /**
-     * Setter for subCollection
-     *
-     * @param BindingCollection|null $subCollection
-     *
-     * @return self
-     */
-    public function setSubCollection(?BindingCollection $subCollection): self
-    {
-        $this->subCollection = $subCollection;
-        return $this;
-    }
-
-    /**
-     * Getter for getter
-     *
-     * @return string|null
-     */
-    public function getGetter(): ?string
-    {
-        return $this->getter;
-    }
-
-    /**
-     * Setter for getter
-     *
-     * @param string|null $getter
-     *
-     * @return self
-     */
-    public function setGetter(?string $getter): self
-    {
-        $this->getter = $getter;
-        return $this;
-    }
-
-    /**
      * Getter for nullable
      *
      * @return bool
@@ -282,13 +230,5 @@ class Binding implements Serializable
     {
         $this->nullable = $nullable;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getKey();
     }
 }

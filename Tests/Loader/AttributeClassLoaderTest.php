@@ -12,38 +12,31 @@ namespace SOW\BindingBundle\Tests\Loader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use ReflectionObject;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
+use SOW\BindingBundle\Loader\AttributeClassLoader;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 
 /**
- * Class AnnotationClassLoaderTest
+ * Class AttributeClassLoaderTest
  *
  * @package SOW\BindingBundle\Tests\Loader
  */
-class AnnotationClassLoaderTest extends TestCase
+class AttributeClassLoaderTest extends TestCase
 {
-    /**
-     * @var AnnotationReader
-     */
-    private $reader;
+    private AttributeClassLoader $loader;
 
-    /**
-     * @var AnnotationClassLoader
-     */
-    private $loader;
-
-    private $bindingAnnotationClass = 'SOW\\BindingBundle\\Annotation\\Binding';
+    private string $bindingAttributeClass = 'SOW\\BindingBundle\\Attribute\\Binding';
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->reader = new AnnotationReader();
-        $this->loader = $this->getClassLoader($this->reader);
+        $this->loader = $this->getClassLoader();
     }
 
     protected function setObjectAttribute($object, $attributeName, $value)
     {
-        $reflection = new \ReflectionObject($object);
+        $reflection = new ReflectionObject($object);
         $property = $reflection->getProperty($attributeName);
         $property->setAccessible(true);
         $property->setValue(
@@ -52,29 +45,22 @@ class AnnotationClassLoaderTest extends TestCase
         );
     }
 
-    public function getReader()
-    {
-        return $this->getMockBuilder('Doctrine\Common\Annotations\Reader')
-            ->disableOriginalConstructor()->getMock();
-    }
-
-    public function getClassLoader($reader)
+    public function getClassLoader()
     {
         $em = $this->createMock(EntityManagerInterface::class);
         return $this->getMockBuilder(
-            'SOW\BindingBundle\Loader\AnnotationClassLoader'
-        )->setConstructorArgs([$reader, $em, $this->bindingAnnotationClass])
+            'SOW\BindingBundle\Loader\AttributeClassLoader'
+        )->setConstructorArgs([$em, $this->bindingAttributeClass])
             ->getMockForAbstractClass();
     }
 
-    # setBindingAnnotationClass
-    public function testChangeAnnotationClass()
+    # setBindingAttributeClass
+    public function testChangeAttributeClass()
     {
-        $newClass
-            = 'SOW\\BindingBundle\\Tests\\Fixtures\\AnnotatedClasses\\TestObject';
-        $this->loader->setBindingAnnotationClass($newClass);
-        $reflection = new \ReflectionObject($this->loader);
-        $property = $reflection->getProperty('bindingAnnotationClass');
+        $newClass = 'SOW\\BindingBundle\\Tests\\Fixtures\\AttributeClasses\\TestAttributeObject';
+        $this->loader->setBindingAttributeClass($newClass);
+        $reflection = new ReflectionObject($this->loader);
+        $property = $reflection->getProperty('bindingAttributeClass');
         $property->setAccessible(true);
         $this->assertEquals(
             $newClass,
@@ -93,14 +79,14 @@ class AnnotationClassLoaderTest extends TestCase
     {
         static::expectException('\InvalidArgumentException');
         $this->loader->load(
-            'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\AbstractClass'
+            'SOW\BindingBundle\Tests\Fixtures\AttributeClasses\AbstractClass'
         );
     }
 
     public function testLoadClass()
     {
         $collection = $this->loader->load(
-            'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestObject'
+            'SOW\BindingBundle\Tests\Fixtures\AttributedClasses\TestAttributeObject'
         );
         $this->assertEquals(
             4,
@@ -111,10 +97,10 @@ class AnnotationClassLoaderTest extends TestCase
     public function testLoadTypedClass()
     {
         $collection = $this->loader->load(
-            'SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestTypedObject'
+            'SOW\BindingBundle\Tests\Fixtures\AttributedClasses\TestAttributeTypedMinMaxObject'
         );
         $this->assertEquals(
-            3,
+            4,
             $collection->count()
         );
     }
@@ -124,7 +110,7 @@ class AnnotationClassLoaderTest extends TestCase
         $this->assertTrue(
             $this->loader->supports(
                 'class',
-                'annotation'
+                'attribute'
             )
         );
         $this->assertFalse(

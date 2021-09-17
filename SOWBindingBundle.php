@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Binding Bundle
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>

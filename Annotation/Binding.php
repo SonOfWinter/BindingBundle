@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Binding annotation class
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Annotation
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -16,9 +13,7 @@ namespace SOW\BindingBundle\Annotation;
  * Class Binding
  *
  * @package SOW\BindingBundle\Annotation
- *
  * @Annotation
- *
  * @Target("PROPERTY")
  */
 class Binding

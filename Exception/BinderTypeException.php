@@ -1,9 +1,6 @@
 <?php
-
 /**
  * BinderTypeException
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Exception
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -11,6 +8,8 @@
  */
 
 namespace SOW\BindingBundle\Exception;
+
+use Throwable;
 
 /**
  * Class BinderTypeException
@@ -22,20 +21,11 @@ class BinderTypeException extends BinderException
     public const CODE = 2914402;
     public const MESSAGE = "Wrong %s parameter type. Expected : %s, received : %s";
 
-    /**
-     * @var string
-     */
-    private $typeExpected;
+    private string $typeExpected;
 
-    /**
-     * @var string
-     */
-    private $typeReceived;
+    private string $typeReceived;
 
-    /**
-     * @var string
-     */
-    private $property;
+    private string $property;
 
     /**
      * BinderTypeException constructor.
@@ -44,14 +34,14 @@ class BinderTypeException extends BinderException
      * @param string $typeReceived
      * @param string $property
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
     public function __construct(
         string $typeExpected,
         string $typeReceived,
         string $property,
-        $code = self::CODE,
-        \Throwable $previous = null
+        int $code = self::CODE,
+        Throwable $previous = null
     ) {
         $message = sprintf(
             self::MESSAGE,

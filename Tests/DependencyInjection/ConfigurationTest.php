@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Configuration test
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Tests\DependencyInjection
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>

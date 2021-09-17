@@ -1,9 +1,6 @@
 <?php
-
 /**
  * BinderTypeException
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Exception
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -11,6 +8,8 @@
  */
 
 namespace SOW\BindingBundle\Exception;
+
+use Throwable;
 
 /**
  * Class BinderTypeException
@@ -22,24 +21,21 @@ class BinderIncludeException extends BinderException
     public const MESSAGE = "Missing mandatory keys : %s";
     public const CODE = 2914404;
 
-    /**
-     * @var array
-     */
-    private $missingKeys;
+    private array $missingKeys;
 
     /**
      * BinderProxyClassException constructor.
      *
      * @param string $message
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      * @param array $missingKeys
      */
     public function __construct(
         array $missingKeys = [],
         string $message = "",
-        $code = self::CODE,
-        \Throwable $previous = null
+        int $code = self::CODE,
+        Throwable $previous = null
     ) {
         if ($message === "") {
             $message = sprintf(self::MESSAGE, implode(", ", $missingKeys));

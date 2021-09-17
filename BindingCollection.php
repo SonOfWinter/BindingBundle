@@ -3,8 +3,6 @@
 /**
  * Binding Collection class
  *
- * PHP Version 7.1
- *
  * @package  SOW\BindingBundle
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
  * @link     https://github.com/SonOfWinter/BindingBundle
@@ -12,31 +10,35 @@
 
 namespace SOW\BindingBundle;
 
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use Symfony\Component\Config\Resource\ResourceInterface;
+use Traversable;
 
 /**
  * Class BindingCollection
  *
  * @package SOW\BindingBundle
  */
-class BindingCollection implements \IteratorAggregate, \Countable
+class BindingCollection implements IteratorAggregate, Countable
 {
     /**
      * @var Binding[]
      */
-    private $bindings = [];
+    private array $bindings = [];
 
     /**
      * @var array
      */
-    private $resources = array();
+    private array $resources = [];
 
     /**
-     * @return \ArrayIterator|\Traversable
+     * @return ArrayIterator|Traversable
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->bindings);
+        return new ArrayIterator($this->bindings);
     }
 
     /**
@@ -58,7 +60,9 @@ class BindingCollection implements \IteratorAggregate, \Countable
      */
     public function addBinding(Binding $binding)
     {
-        unset($this->bindings[$binding->getKey()]);
+        if (array_key_exists($binding->getKey(), $this->bindings)) {
+            unset($this->bindings[$binding->getKey()]);
+        }
         $this->bindings[$binding->getKey()] = $binding;
     }
 
@@ -67,7 +71,7 @@ class BindingCollection implements \IteratorAggregate, \Countable
      *
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->bindings;
     }
@@ -79,9 +83,9 @@ class BindingCollection implements \IteratorAggregate, \Countable
      *
      * @return null|Binding
      */
-    public function get($key)
+    public function get($key): ?Binding
     {
-        return isset($this->bindings[$key]) ? $this->bindings[$key] : null;
+        return $this->bindings[$key] ?? null;
     }
 
     /**
@@ -91,10 +95,12 @@ class BindingCollection implements \IteratorAggregate, \Countable
      *
      * @return void
      */
-    public function remove($key)
+    public function remove(string|array $key)
     {
-        foreach ((array)$key as $k) {
-            unset($this->bindings[$k]);
+        if (!empty($key)) {
+            foreach ((array)$key as $k) {
+                unset($this->bindings[$k]);
+            }
         }
     }
 
@@ -108,7 +114,9 @@ class BindingCollection implements \IteratorAggregate, \Countable
     public function mergeCollection(BindingCollection $collection)
     {
         foreach ($collection->all() as $key => $binding) {
-            unset($this->bindings[$key]);
+            if (array_key_exists($key, $this->bindings)) {
+                unset($this->bindings[$key]);
+            }
             $this->bindings[$key] = $binding;
         }
         foreach ($collection->getResources() as $resource) {
@@ -116,13 +124,12 @@ class BindingCollection implements \IteratorAggregate, \Countable
         }
     }
 
-
     /**
      * Returns an array of resources loaded to build this collection.
      *
      * @return array
      */
-    public function getResources()
+    public function getResources(): array
     {
         return array_values($this->resources);
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Annotation class loader
+ * Attribute class loader
  *
  * @package  SOW\BindingBundle\Loader
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -19,54 +19,43 @@ use SOW\BindingBundle\Binding;
 use SOW\BindingBundle\BindingCollection;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
-use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\Config\Resource\FileResource;
 
 /**
- * Class AnnotationClassLoader
+ * Class AttributeClassLoader
  *
  * @package SOW\BindingBundle\Loader
  */
-class AnnotationClassLoader implements LoaderInterface
+class AttributeClassLoader implements LoaderInterface
 {
     public const SCALAR_TYPES = ['integer', 'float', 'string', 'boolean', 'array'];
 
-    /**
-     * Reader for annotation
-     */
-    protected Reader $reader;
-
-    /**
-     * Annotation class name
-     */
-    protected string $bindingAnnotationClass;
+    protected string $bindingAttributeClass;
 
     private EntityManagerInterface $em;
 
     /**
-     * AnnotationClassLoader constructor.
+     * AttributeClassLoader constructor.
      *
-     * @param Reader $reader
      * @param EntityManagerInterface $em
-     * @param string $bindingAnnotationClass
+     * @param $bindingAnnotationClass
      */
-    public function __construct(Reader $reader, EntityManagerInterface $em, string $bindingAnnotationClass)
+    public function __construct(EntityManagerInterface $em, $bindingAnnotationClass)
     {
-        $this->reader = $reader;
         $this->em = $em;
-        $this->bindingAnnotationClass = $bindingAnnotationClass;
+        $this->bindingAttributeClass = $bindingAnnotationClass;
     }
 
     /**
      * Sets the annotation class to read binding properties from.
      *
-     * @param string $class
+     * @param $class
      *
      * @return void
      */
-    public function setBindingAnnotationClass(string $class)
+    public function setBindingAttributeClass($class)
     {
-        $this->bindingAnnotationClass = $class;
+        $this->bindingAttributeClass = $class;
     }
 
     /**
@@ -108,11 +97,13 @@ class AnnotationClassLoader implements LoaderInterface
             $methods[] = $reflectionMethod->getName();
         }
         foreach ($class->getProperties() as $property) {
-            foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
-                if ($annot instanceof $this->bindingAnnotationClass) {
+            $attributes = $property->getAttributes($this->bindingAttributeClass);
+            foreach ($attributes as $attribute) {
+                $listener = $attribute->newInstance();
+                if (get_class($listener) === $this->bindingAttributeClass) {
                     $this->addBinding(
                         $collection,
-                        $annot,
+                        $listener,
                         $methods,
                         $property
                     );
@@ -126,38 +117,36 @@ class AnnotationClassLoader implements LoaderInterface
      * Add binding class to BindingCollection
      *
      * @param BindingCollection $collection
-     * @param \SOW\BindingBundle\Annotation\Binding $annot
+     * @param \SOW\BindingBundle\Attribute\Binding $attribute
      * @param array $methods
      * @param ReflectionProperty $property
      *
-     * @throws InvalidArgumentException
-     * @throws ReflectionException
      * @return void
      */
     protected function addBinding(
         BindingCollection $collection,
-        \SOW\BindingBundle\Annotation\Binding $annot,
+        \SOW\BindingBundle\Attribute\Binding $attribute,
         array $methods,
         ReflectionProperty $property
     ) {
         $propertyName = $property->getName();
-        $setter = $annot->getSetter() ?? 'set' . ucfirst($propertyName);
-        $getter = $annot->getGetter() ?? 'get' . ucfirst($propertyName);
+        $setter = $attribute->getSetter() ?? 'set' . ucfirst($propertyName);
+        $getter = $attribute->getGetter() ?? 'get' . ucfirst($propertyName);
         if (in_array($setter, $methods)) {
             $subCollection = null;
-            if (self::isNotScalar($annot->getType())) {
-                $subLoader = new AnnotationClassLoader($this->reader, $this->em, $this->bindingAnnotationClass);
-                $subCollection = $subLoader->load($annot->getType());
+            if (self::isNotScalar($attribute->getType())) {
+                $subLoader = new AttributeClassLoader($this->em, $this->bindingAttributeClass);
+                $subCollection = $subLoader->load($attribute->getType());
             }
             $binding = new Binding(
-                $annot->getKey() ?? $propertyName,
+                $attribute->getKey() ?? $propertyName,
                 $setter,
-                $annot->getType(),
-                $annot->getMin(),
-                $annot->getMax(),
+                $attribute->getType(),
+                $attribute->getMin(),
+                $attribute->getMax(),
                 $subCollection,
                 $getter,
-                $annot->isNullable()
+                $attribute->isNullable()
             );
             $collection->addBinding($binding);
         }
@@ -178,7 +167,7 @@ class AnnotationClassLoader implements LoaderInterface
                 '/^(?:\\\\?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)+$/',
                 $resource
             )
-            && (!$type || 'annotation' === $type);
+            && (!$type || 'attribute' === $type);
     }
 
     /**

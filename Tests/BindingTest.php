@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Binding test
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Tests
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -84,14 +81,12 @@ class BindingTest extends TestCase
             true
         );
         $serialize = $binding->serialize();
-
         $binding = new Binding(
             'bar',
             'setBar',
             'int'
         );
         $binding->unserialize($serialize);
-
         $this->assertEquals('foo', $binding->getKey());
         $this->assertEquals('setFoo', $binding->getSetter());
         $this->assertEquals('getFoo', $binding->getGetter());

@@ -1,9 +1,6 @@
 <?php
-
 /**
  * BinderMinValueException
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Exception
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -11,6 +8,8 @@
  */
 
 namespace SOW\BindingBundle\Exception;
+
+use Throwable;
 
 /**
  * Class BinderMinValueException
@@ -22,16 +21,9 @@ class BinderMinValueException extends BinderException
     public const MESSAGE = "%s must have a value more than : %s";
     public const CODE = 2914405;
 
-    /**
-     * @var string
-     */
-    private $key;
+    private string $key;
 
-    /**
-     * @var int
-     */
-    private $min;
-
+    private int $min;
 
     /**
      * BinderMinValueException constructor.
@@ -40,14 +32,14 @@ class BinderMinValueException extends BinderException
      * @param string $message
      * @param int $min
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
     public function __construct(
         string $key = '',
         int $min = 0,
         string $message = "",
-        $code = self::CODE,
-        \Throwable $previous = null
+        int $code = self::CODE,
+        Throwable $previous = null
     ) {
         if ($message === "") {
             $message = sprintf(self::MESSAGE, $key, $min);

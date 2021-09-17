@@ -1,8 +1,5 @@
 <?php
-
 /**
- * PHP Version 7.1, 7.2
- *
  * @package  SOW\BindingBundle\Tests\DependencyInjection
  * @author   Openium <contact@openium.fr>
  * @license  Openium All right reserved
@@ -34,7 +31,7 @@ class SOWBindingExtensionTest extends TestCase
         $container->expects($this->any())
             ->method('getParameterBag')
             ->will($this->returnValue($paramBag));
-        $container->expects($this->exactly(2))
+        $container->expects($this->exactly(4))
             ->method('setParameter')
             ->will($this->returnValue($paramBag));
         $container->expects($this->once())

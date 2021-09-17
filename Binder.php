@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Binder class
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -14,6 +11,8 @@ namespace SOW\BindingBundle;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\Proxy;
+use Error;
+use Exception;
 use Psr\Log\LoggerInterface;
 use SOW\BindingBundle\Exception\BinderConfigurationException;
 use SOW\BindingBundle\Exception\BinderIncludeException;
@@ -25,6 +24,7 @@ use SOW\BindingBundle\Exception\BinderRecursiveException;
 use SOW\BindingBundle\Exception\BinderTypeException;
 use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use TypeError;
 
 /**
  * Class Binder
@@ -33,64 +33,59 @@ use Symfony\Component\Config\Loader\LoaderInterface;
  */
 class Binder implements BinderInterface
 {
-    /**
-     * @var LoggerInterface|null
-     */
-    protected $logger;
+    public const METHOD_ANNOTATION = "annotation";
+    public const METHOD_ATTRIBUTE = "attribute";
 
-    /**
-     * @var mixed
-     */
-    protected $resource;
+    protected ?LoggerInterface $logger = null;
 
-    /**
-     * @var LoaderInterface
-     */
-    protected $loader;
+    protected mixed $resource = null;
 
-    /**
-     * @var BindingCollection|null
-     */
-    protected $collection;
+    protected LoaderInterface $loader;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    protected ?BindingCollection $collection = null;
 
-    /**
-     * @var int
-     */
-    private $bindingMaxRecursiveCalls;
+    private EntityManagerInterface $em;
+
+    private int $bindingMaxRecursiveCalls;
 
     /**
      * Binder constructor.
      *
-     * @param LoaderInterface $loader
+     * @param LoaderInterface $annotationLoader
+     * @param LoaderInterface $attributeLoader
      * @param EntityManagerInterface $em
-     * @param $bindingMaxRecursiveCalls
+     * @param int $bindingMaxRecursiveCalls
+     * @param string $method
      * @param LoggerInterface|null $logger
+     *
+     * @throws BinderConfigurationException
      */
     public function __construct(
-        LoaderInterface $loader,
+        LoaderInterface $annotationLoader,
+        LoaderInterface $attributeLoader,
         EntityManagerInterface $em,
-        $bindingMaxRecursiveCalls,
+        int $bindingMaxRecursiveCalls,
+        string $method,
         LoggerInterface $logger = null
     ) {
-        $this->loader = $loader;
+        if ($method === self::METHOD_ANNOTATION) {
+            $this->loader = $annotationLoader;
+        } elseif ($method === self::METHOD_ATTRIBUTE) {
+            $this->loader = $attributeLoader;
+        } else {
+            throw new BinderConfigurationException("Wrong binder method");
+        }
         $this->em = $em;
-        $this->bindingMaxRecursiveCalls = intval($bindingMaxRecursiveCalls);
+        $this->bindingMaxRecursiveCalls = $bindingMaxRecursiveCalls;
         $this->logger = $logger;
     }
-
 
     /**
      * setResource
      *
      * @param $resource
      *
-     * @throws \Exception
-     *
+     * @throws Exception
      * @return void
      */
     public function setResource($resource)
@@ -103,11 +98,9 @@ class Binder implements BinderInterface
      * getBindingCollection
      *
      * @throws BinderConfigurationException
-     * @throws \Exception
-     *
-     * @return null|BindingCollection
+     * @throws Exception
      */
-    public function getBindingCollection()
+    public function getBindingCollection(): ?BindingCollection
     {
         if ($this->resource === null) {
             throw new BinderConfigurationException();
@@ -118,8 +111,7 @@ class Binder implements BinderInterface
     /**
      * loadCollection
      *
-     * @throws \Exception
-     *
+     * @throws Exception
      * @return null|BindingCollection
      */
     private function loadCollection()
@@ -143,7 +135,7 @@ class Binder implements BinderInterface
      * @throws BinderMaxValueException
      * @throws BinderMinValueException
      * @throws BinderRecursiveException
-     *
+     * @throws BinderNullableException
      * @return void
      */
     public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
@@ -166,11 +158,20 @@ class Binder implements BinderInterface
                     try {
                         $type = $binding->getType();
                         $subObject = new $type();
-                    } catch (\TypeError $te) {
-                        error_log($te->getMessage());
-                    } catch (\Error $e) {
-                        error_log(get_class($e));
-                        error_log($e->getMessage());
+                    } catch (TypeError $te) {
+                        if ($this->logger !== null) {
+                            $this->logger->error($te->getMessage());
+                        } else {
+                            error_log($te->getMessage());
+                        }
+                    } catch (Error $e) {
+                        if ($this->logger !== null) {
+                            $this->logger->error(get_class($e));
+                            $this->logger->error($te->getMessage());
+                        } else {
+                            error_log(get_class($e));
+                            error_log($e->getMessage());
+                        }
                     }
                 }
                 if (!empty($subObject) && array_key_exists($binding->getKey(), $params)) {
@@ -223,7 +224,6 @@ class Binder implements BinderInterface
      *
      * @throws BinderConfigurationException
      * @throws BinderProxyClassException
-     *
      * @return array
      */
     public function getKeys($object): array
@@ -243,7 +243,6 @@ class Binder implements BinderInterface
      * @param $object
      *
      * @throws BinderProxyClassException
-     *
      * @return void
      */
     protected function checkResource($object)
@@ -266,7 +265,6 @@ class Binder implements BinderInterface
      * @param $value
      *
      * @throws BinderTypeException
-     *
      * @return void
      */
     protected function checkType(Binding $binding, $value)
@@ -286,7 +284,6 @@ class Binder implements BinderInterface
      * @param $min
      *
      * @throws BinderMinValueException
-     *
      * @return void
      */
     protected function checkMinValue($key, $value, $min)
@@ -314,7 +311,6 @@ class Binder implements BinderInterface
      * @param $max
      *
      * @throws BinderMaxValueException
-     *
      * @return void
      */
     protected function checkMaxValue($key, $value, $max)
@@ -341,7 +337,6 @@ class Binder implements BinderInterface
      * @param $value
      *
      * @throws BinderNullableException
-     *
      * @return void
      */
     protected function checkNullValue($key, $value)

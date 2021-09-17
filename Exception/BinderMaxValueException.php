@@ -1,9 +1,6 @@
 <?php
-
 /**
  * BinderMaxValueException
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Exception
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -11,6 +8,8 @@
  */
 
 namespace SOW\BindingBundle\Exception;
+
+use Throwable;
 
 /**
  * Class BinderMaxValueException
@@ -22,15 +21,9 @@ class BinderMaxValueException extends BinderException
     public const MESSAGE = "%s must have a value less than : %s";
     public const CODE = 2914406;
 
-    /**
-     * @var string
-     */
-    private $key;
+    private string $key;
 
-    /**
-     * @var int
-     */
-    private $max;
+    private int $max;
 
     /**
      * BinderMaxValueException constructor.
@@ -39,14 +32,14 @@ class BinderMaxValueException extends BinderException
      * @param int $max
      * @param string $message
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
     public function __construct(
         string $key = '',
         int $max = 0,
         string $message = "",
-        $code = self::CODE,
-        \Throwable $previous = null
+        int $code = self::CODE,
+        Throwable $previous = null
     ) {
         if ($message === "") {
             $message = sprintf(self::MESSAGE, $key, $max);
@@ -69,9 +62,9 @@ class BinderMaxValueException extends BinderException
     /**
      * Getter for max
      *
-     * @return mixed
+     * @return int
      */
-    public function getMax()
+    public function getMax(): int
     {
         return $this->max;
     }

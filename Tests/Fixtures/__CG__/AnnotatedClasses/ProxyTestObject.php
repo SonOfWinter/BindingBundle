@@ -2,7 +2,9 @@
 
 namespace SOW\BindingBundle\Tests\Fixtures\__CG__\AnnotatedClasses;
 
-use Doctrine\Common\Persistence\Proxy;
+
+use Closure;
+use Doctrine\ORM\Proxy\Proxy;
 use SOW\BindingBundle\Annotation as Binding;
 use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject;
 
@@ -162,5 +164,35 @@ class ProxyTestObject implements Proxy
     public function __isInitialized()
     {
         return $this->init;
+    }
+
+    public function __setInitialized($initialized)
+    {
+        // TODO: Implement __setInitialized() method.
+    }
+
+    public function __setInitializer(?Closure $initializer = null)
+    {
+        // TODO: Implement __setInitializer() method.
+    }
+
+    public function __getInitializer()
+    {
+        // TODO: Implement __getInitializer() method.
+    }
+
+    public function __setCloner(?Closure $cloner = null)
+    {
+        // TODO: Implement __setCloner() method.
+    }
+
+    public function __getCloner()
+    {
+        // TODO: Implement __getCloner() method.
+    }
+
+    public function __getLazyProperties()
+    {
+        // TODO: Implement __getLazyProperties() method.
     }
 }

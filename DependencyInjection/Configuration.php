@@ -1,9 +1,6 @@
 <?php
-
 /**
  * Configuration class
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\DependencyInjection
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>

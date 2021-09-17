@@ -1,9 +1,6 @@
 <?php
-
 /**
  * BinderConfigurationException
- *
- * PHP Version 7.1
  *
  * @package  SOW\BindingBundle\Exception
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
@@ -11,6 +8,8 @@
  */
 
 namespace SOW\BindingBundle\Exception;
+
+use Throwable;
 
 /**
  * Class BinderConfigurationException
@@ -27,9 +26,9 @@ class BinderConfigurationException extends BinderException
      *
      * @param string $message
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
-    public function __construct($message = self::MESSAGE, $code = self::CODE, \Throwable $previous = null)
+    public function __construct(string $message = self::MESSAGE, int $code = self::CODE, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

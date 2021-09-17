@@ -2,33 +2,29 @@
 /**
  * Binding test
  *
- * @package  SOW\BindingBundle\Tests\Annotation
+ * @package  SOW\BindingBundle\Tests\Attribute
  * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
  * @link     https://github.com/SonOfWinter/BindingBundle
  */
 
-namespace SOW\BindingBundle\Tests\Annotation;
+namespace SOW\BindingBundle\Tests\Attribute;
 
 use PHPUnit\Framework\TestCase;
-use SOW\BindingBundle\Annotation\Binding;
+use SOW\BindingBundle\Attribute\Binding;
 
 /**
  * Class BindingTest
  *
- * @package SOW\BindingBundle\Tests\Annotation
+ * @package SOW\BindingBundle\Tests\Attribute
  */
 class BindingTest extends TestCase
 {
-    public function testInvalidRouteParameter()
-    {
-        static::expectException('\BadMethodCallException');
-        new Binding(['foo' => 'bar']);
-    }
-
     public function testValidNameSetterAndTypeParameters()
     {
         $binding = new Binding(
-            ['key' => 'test', 'setter' => 'getTest', 'type' => 'string']
+            key:    'test',
+            setter: 'getTest',
+            type:   'string'
         );
         $this->assertTrue($binding instanceof Binding);
         $this->assertEquals('test', $binding->getKey());
@@ -38,7 +34,7 @@ class BindingTest extends TestCase
 
     public function testValidNameAndSetterParameters()
     {
-        $binding = new Binding(['key' => 'test', 'setter' => 'getTest']);
+        $binding = new Binding('test', 'getTest');
         $this->assertTrue($binding instanceof Binding);
         $this->assertEquals('test', $binding->getKey());
         $this->assertEquals('getTest', $binding->getSetter());
@@ -47,17 +43,20 @@ class BindingTest extends TestCase
 
     public function testValidNameParameter()
     {
-        $binding = new Binding(['key' => 'test']);
+        $binding = new Binding('test');
         $this->assertTrue($binding instanceof Binding);
         $this->assertEquals('test', $binding->getKey());
-        $this->assertNull($binding->getSetter());
+        $this->assertEquals('setTest', $binding->getSetter());
         $this->assertNull($binding->getType());
     }
 
     public function testValidMinMaxAndNullableParameters()
     {
         $binding = new Binding(
-            ['key' => 'test', 'nullable' => true, 'min' => 1, 'max' => 10]
+            key:      'test',
+            min:      1,
+            max:      10,
+            nullable: true
         );
         $this->assertTrue($binding instanceof Binding);
         $this->assertEquals('test', $binding->getKey());
