@@ -181,3 +181,28 @@ V0.8.0 update
 
 Update Symfony minimum version 4.1 -> 4.3 || 5.0
 
+v0.9.0 update
+-------------
+
+Adds attributes and increases minimum versions : 
+- Symfony minimum version 5.0
+- PHP minimum version 8.0
+
+So now, you can use attribute instead of annotation.
+
+```php
+    #[Binding(key: "lastname", setter: "setLastname", type: "string", min: 2, max: 255)]
+    private string $lastname = '';
+```
+
+You have to add this configuration to use it :
+
+```yaml
+    sow_binding.binding_method: attribute
+```
+
+You can also override Binder attribute with this configuration :
+
+```yaml
+    sow_binding.attribute_class_name: 'SOW\BindingBundle\Attribute\Binding'
+```
