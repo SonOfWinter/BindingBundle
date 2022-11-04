@@ -40,4 +40,9 @@ class BinderNullableException extends BinderException
         $this->key = $key;
         parent::__construct($message, $code, $previous);
     }
+
+    public function getKey(): string
+    {
+        return $this->key;
+    }
 }
