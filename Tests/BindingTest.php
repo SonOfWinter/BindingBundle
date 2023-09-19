@@ -80,13 +80,14 @@ class BindingTest extends TestCase
             'getFoo',
             true
         );
-        $serialize = $binding->serialize();
-        $binding = new Binding(
-            'bar',
-            'setBar',
-            'int'
-        );
-        $binding->unserialize($serialize);
+        $serialize = serialize($binding);
+        //binding = new Binding(
+        //   'bar',
+        //   'setBar',
+        //   'int'
+        //);
+        $binding = unserialize($serialize);
+        //$binding->unserialize($serialize);
         $this->assertEquals('foo', $binding->getKey());
         $this->assertEquals('setFoo', $binding->getSetter());
         $this->assertEquals('getFoo', $binding->getGetter());

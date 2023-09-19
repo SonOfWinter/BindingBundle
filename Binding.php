@@ -9,14 +9,12 @@
 
 namespace SOW\BindingBundle;
 
-use Serializable;
-
 /**
  * Class Binding
  *
  * @package SOW\BindingBundle
  */
-class Binding implements Serializable
+class Binding
 {
     private string $key;
 
@@ -66,31 +64,21 @@ class Binding implements Serializable
         $this->nullable = $nullable;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function __serialize(): array
     {
-        // TODO serialize subCollection
-        return serialize(
-            [
-                'key' => $this->key,
-                'setter' => $this->setter,
-                'getter' => $this->getter,
-                'type' => $this->type,
-                'min' => $this->min,
-                'max' => $this->max,
-                'nullable' => $this->nullable,
-            ]
-        );
+        return [
+            'key' => $this->key,
+            'setter' => $this->setter,
+            'getter' => $this->getter,
+            'type' => $this->type,
+            'min' => $this->min,
+            'max' => $this->max,
+            'nullable' => $this->nullable,
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
+    public function __unserialize(array $data): void
     {
-        $data = unserialize($serialized);
         $this->key = $data['key'];
         $this->setter = $data['setter'];
         $this->getter = $data['getter'];

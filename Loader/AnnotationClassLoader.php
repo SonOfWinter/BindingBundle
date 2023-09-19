@@ -64,7 +64,7 @@ class AnnotationClassLoader implements LoaderInterface
      *
      * @return void
      */
-    public function setBindingAnnotationClass(string $class)
+    public function setBindingAnnotationClass(string $class): void
     {
         $this->bindingAnnotationClass = $class;
     }
@@ -139,7 +139,7 @@ class AnnotationClassLoader implements LoaderInterface
         \SOW\BindingBundle\Annotation\Binding $annot,
         array $methods,
         ReflectionProperty $property
-    ) {
+    ): void {
         $propertyName = $property->getName();
         $setter = $annot->getSetter() ?? 'set' . ucfirst($propertyName);
         $getter = $annot->getGetter() ?? 'get' . ucfirst($propertyName);
@@ -171,7 +171,7 @@ class AnnotationClassLoader implements LoaderInterface
      *
      * @return bool
      */
-    public function supports($resource, $type = null)
+    public function supports($resource, $type = null): bool
     {
         return is_string($resource)
             && preg_match(
@@ -198,7 +198,7 @@ class AnnotationClassLoader implements LoaderInterface
      *
      * @return void
      */
-    public function setResolver(LoaderResolverInterface $resolver)
+    public function setResolver(LoaderResolverInterface $resolver): void
     {
         return;
     }

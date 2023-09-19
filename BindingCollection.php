@@ -36,7 +36,7 @@ class BindingCollection implements IteratorAggregate, Countable
     /**
      * @return ArrayIterator|Traversable
      */
-    public function getIterator()
+    public function getIterator(): Traversable | ArrayIterator
     {
         return new ArrayIterator($this->bindings);
     }
@@ -46,7 +46,7 @@ class BindingCollection implements IteratorAggregate, Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->bindings);
     }
@@ -58,7 +58,7 @@ class BindingCollection implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function addBinding(Binding $binding)
+    public function addBinding(Binding $binding): void
     {
         if (array_key_exists($binding->getKey(), $this->bindings)) {
             unset($this->bindings[$binding->getKey()]);
@@ -95,7 +95,7 @@ class BindingCollection implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function remove(string|array $key)
+    public function remove(string|array $key): void
     {
         if (!empty($key)) {
             foreach ((array)$key as $k) {
@@ -111,7 +111,7 @@ class BindingCollection implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function mergeCollection(BindingCollection $collection)
+    public function mergeCollection(BindingCollection $collection): void
     {
         foreach ($collection->all() as $key => $binding) {
             if (array_key_exists($key, $this->bindings)) {
@@ -142,7 +142,7 @@ class BindingCollection implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function addResource(ResourceInterface $resource)
+    public function addResource(ResourceInterface $resource): void
     {
         $key = (string) $resource;
         if (!isset($this->resources[$key])) {

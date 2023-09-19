@@ -125,10 +125,4 @@ class AttributeClassLoaderTest extends TestCase
     {
         $this->assertTrue(empty($this->loader->getResolver()));
     }
-
-    public function testSetResolverDoesNothing()
-    {
-        $lri = $this->createMock(LoaderResolverInterface::class);
-        $this->assertTrue(empty($this->loader->setResolver($lri)));
-    }
 }

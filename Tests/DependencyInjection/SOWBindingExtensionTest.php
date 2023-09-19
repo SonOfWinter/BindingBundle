@@ -23,7 +23,12 @@ class SOWBindingExtensionTest extends TestCase
 {
     public function testLoad()
     {
-        $paramBag = $this->createMock(ParameterBagInterface::class);
+        try {
+            $paramBag = $this->createMock(ParameterBagInterface::class);
+        } catch (\Exception $exception) {
+            print_r($exception->getMessage());
+            self::fail('');
+        }
         $container = $this->createMock(ContainerBuilder::class);
         $container->expects($this->once())
             ->method('getReflectionClass')
