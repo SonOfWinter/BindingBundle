@@ -10,6 +10,7 @@
 namespace SOW\BindingBundle;
 
 use SOW\BindingBundle\DependencyInjection\SOWBindingExtension;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -20,9 +21,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class SOWBindingBundle extends Bundle
 {
     /**
-     * @return null|SOWBindingExtension|\Symfony\Component\DependencyInjection\Extension\ExtensionInterface
+     * @return ExtensionInterface|null
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new SOWBindingExtension();
     }
