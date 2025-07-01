@@ -26,7 +26,7 @@ class Binding
 
     public string $getter;
 
-    public ?string $type;
+    public ?string $type = null;
 
     public ?int $min = null;
 

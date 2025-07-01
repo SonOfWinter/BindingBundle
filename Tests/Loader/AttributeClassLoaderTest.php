@@ -9,13 +9,11 @@
 
 namespace SOW\BindingBundle\Tests\Loader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
-use SOW\BindingBundle\Loader\AnnotationClassLoader;
 use SOW\BindingBundle\Loader\AttributeClassLoader;
-use Symfony\Component\Config\Loader\LoaderResolverInterface;
 
 /**
  * Class AttributeClassLoaderTest
@@ -34,7 +32,7 @@ class AttributeClassLoaderTest extends TestCase
         $this->loader = $this->getClassLoader();
     }
 
-    protected function setObjectAttribute($object, $attributeName, $value)
+    protected function setObjectAttribute($object, $attributeName, $value): void
     {
         $reflection = new ReflectionObject($object);
         $property = $reflection->getProperty($attributeName);
@@ -45,7 +43,7 @@ class AttributeClassLoaderTest extends TestCase
         );
     }
 
-    public function getClassLoader()
+    public function getClassLoader(): MockObject
     {
         $em = $this->createMock(EntityManagerInterface::class);
         return $this->getMockBuilder(
@@ -55,7 +53,7 @@ class AttributeClassLoaderTest extends TestCase
     }
 
     # setBindingAttributeClass
-    public function testChangeAttributeClass()
+    public function testChangeAttributeClass(): void
     {
         $newClass = 'SOW\\BindingBundle\\Tests\\Fixtures\\AttributeClasses\\TestAttributeObject';
         $this->loader->setBindingAttributeClass($newClass);
@@ -69,13 +67,13 @@ class AttributeClassLoaderTest extends TestCase
     }
 
     # load
-    public function testLoadWrongClass()
+    public function testLoadWrongClass(): void
     {
         static::expectException('\InvalidArgumentException');
         $this->loader->load('WrongClass');
     }
 
-    public function testLoadAbstractClass()
+    public function testLoadAbstractClass(): void
     {
         static::expectException('\InvalidArgumentException');
         $this->loader->load(
@@ -83,29 +81,23 @@ class AttributeClassLoaderTest extends TestCase
         );
     }
 
-    public function testLoadClass()
+    public function testLoadClass(): void
     {
         $collection = $this->loader->load(
             'SOW\BindingBundle\Tests\Fixtures\AttributedClasses\TestAttributeObject'
         );
-        $this->assertEquals(
-            4,
-            $collection->count()
-        );
+        $this->assertEquals(4, $collection->count());
     }
 
-    public function testLoadTypedClass()
+    public function testLoadTypedClass(): void
     {
         $collection = $this->loader->load(
             'SOW\BindingBundle\Tests\Fixtures\AttributedClasses\TestAttributeTypedMinMaxObject'
         );
-        $this->assertEquals(
-            4,
-            $collection->count()
-        );
+        $this->assertEquals(4, $collection->count());
     }
 
-    public function testSupportsChecksTypeIfSpecified()
+    public function testSupportsChecksTypeIfSpecified(): void
     {
         $this->assertTrue(
             $this->loader->supports(
@@ -119,10 +111,5 @@ class AttributeClassLoaderTest extends TestCase
                 'foo'
             )
         );
-    }
-
-    public function testGetResolverDoesNothing()
-    {
-        $this->assertTrue(empty($this->loader->getResolver()));
     }
 }

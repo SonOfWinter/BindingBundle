@@ -206,3 +206,8 @@ You can also override Binder attribute with this configuration :
 ```yaml
     sow_binding.attribute_class_name: 'SOW\BindingBundle\Attribute\Binding'
 ```
+
+v1.0.0 update
+-------------
+
+Remove annotation support, only attributes are supported now.

@@ -1,11 +1,4 @@
 <?php
-/**
- * Configuration class
- *
- * @package  SOW\BindingBundle\DependencyInjection
- * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
- * @link     https://github.com/SonOfWinter/BindingBundle
- */
 
 namespace SOW\BindingBundle\DependencyInjection;
 
@@ -24,7 +17,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         return new TreeBuilder('sow_binding');
     }

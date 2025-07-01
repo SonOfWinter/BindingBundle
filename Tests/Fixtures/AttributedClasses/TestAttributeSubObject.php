@@ -17,7 +17,7 @@ class TestAttributeSubObject extends AbstractClass
     #[Binding(key: "lastname")]
     private string $lastname = '';
 
-    #[Binding(key: "subSubObject", type: "SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubSubObject")]
+    #[Binding(key: "subSubObject", type: "SOW\BindingBundle\Tests\Fixtures\AttributedClasses\TestAttributeSubSubObject")]
     private TestAttributeSubSubObject $subSubObject;
 
     /**

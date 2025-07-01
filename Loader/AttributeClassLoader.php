@@ -10,13 +10,14 @@
 namespace SOW\BindingBundle\Loader;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 use SOW\BindingBundle\Binding;
 use SOW\BindingBundle\BindingCollection;
+use SOW\BindingBundle\Utils\TypeUtils;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -28,11 +29,12 @@ use Symfony\Component\Config\Resource\FileResource;
  */
 class AttributeClassLoader implements LoaderInterface
 {
-    public const SCALAR_TYPES = ['integer', 'float', 'string', 'boolean', 'array'];
 
     protected string $bindingAttributeClass;
 
     private EntityManagerInterface $em;
+
+    private LoaderResolverInterface $resolver;
 
     /**
      * AttributeClassLoader constructor.
@@ -53,7 +55,7 @@ class AttributeClassLoader implements LoaderInterface
      *
      * @return void
      */
-    public function setBindingAttributeClass($class)
+    public function setBindingAttributeClass($class): void
     {
         $this->bindingAttributeClass = $class;
     }
@@ -61,42 +63,42 @@ class AttributeClassLoader implements LoaderInterface
     /**
      * Load Binding data from class
      *
-     * @param mixed $class
+     * @param mixed $resource
      * @param null $type
      *
      * @throws ReflectionException
      * @throws InvalidArgumentException
      * @return BindingCollection
      */
-    public function load($class, $type = null): BindingCollection
+    public function load(mixed $resource, $type = null): mixed
     {
-        if (!class_exists($class)) {
+        if (!class_exists($resource)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Class "%s" does not exist.',
-                    $class
+                    $resource
                 )
             );
         }
-        if (strpos($class, Proxy::MARKER) !== false) {
-            $class = $this->em->getClassMetadata($class)->rootEntityName;
+        if (str_contains($resource, Proxy::MARKER)) {
+            $resource = $this->em->getClassMetadata($resource)->rootEntityName;
         }
-        $class = new ReflectionClass($class);
-        if ($class->isAbstract()) {
+        $resource = new ReflectionClass($resource);
+        if ($resource->isAbstract()) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Annotations from class "%s" cannot be read as it is abstract.',
-                    $class->getName()
+                    $resource->getName()
                 )
             );
         }
         $collection = new BindingCollection();
-        $collection->addResource(new FileResource($class->getFileName()));
+        $collection->addResource(new FileResource($resource->getFileName()));
         $methods = [];
-        foreach ($class->getMethods() as $reflectionMethod) {
+        foreach ($resource->getMethods() as $reflectionMethod) {
             $methods[] = $reflectionMethod->getName();
         }
-        foreach ($class->getProperties() as $property) {
+        foreach ($resource->getProperties() as $property) {
             $attributes = $property->getAttributes($this->bindingAttributeClass);
             foreach ($attributes as $attribute) {
                 $listener = $attribute->newInstance();
@@ -128,13 +130,13 @@ class AttributeClassLoader implements LoaderInterface
         \SOW\BindingBundle\Attribute\Binding $attribute,
         array $methods,
         ReflectionProperty $property
-    ) {
+    ): void {
         $propertyName = $property->getName();
         $setter = $attribute->getSetter() ?? 'set' . ucfirst($propertyName);
         $getter = $attribute->getGetter() ?? 'get' . ucfirst($propertyName);
         if (in_array($setter, $methods)) {
             $subCollection = null;
-            if (self::isNotScalar($attribute->getType())) {
+            if (TypeUtils::isNotScalar($attribute->getType())) {
                 $subLoader = new AttributeClassLoader($this->em, $this->bindingAttributeClass);
                 $subCollection = $subLoader->load($attribute->getType());
             }
@@ -160,7 +162,7 @@ class AttributeClassLoader implements LoaderInterface
      *
      * @return bool
      */
-    public function supports($resource, $type = null)
+    public function supports(mixed $resource, $type = null): bool
     {
         return is_string($resource)
             && preg_match(
@@ -173,11 +175,11 @@ class AttributeClassLoader implements LoaderInterface
     /**
      * Not implemented
      *
-     * @return LoaderResolverInterface|void
+     * @return LoaderResolverInterface
      */
-    public function getResolver()
+    public function getResolver(): LoaderResolverInterface
     {
-        return;
+        return $this->resolver;
     }
 
     /**
@@ -187,32 +189,8 @@ class AttributeClassLoader implements LoaderInterface
      *
      * @return void
      */
-    public function setResolver(LoaderResolverInterface $resolver)
+    public function setResolver(LoaderResolverInterface $resolver): void
     {
-        return;
-    }
-
-    /**
-     * isNotScalar
-     *
-     * @param string|null $type
-     *
-     * @return bool
-     */
-    public static function isNotScalar(?string $type = null): bool
-    {
-        return (!empty($type) && !in_array($type, self::SCALAR_TYPES));
-    }
-
-    /**
-     * isNotScalar
-     *
-     * @param string|null $type
-     *
-     * @return bool
-     */
-    public static function isScalar(?string $type = null): bool
-    {
-        return !self::isNotScalar($type);
+        $this->resolver = $resolver;
     }
 }

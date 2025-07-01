@@ -29,7 +29,7 @@ class BindingCollection implements IteratorAggregate, Countable
     private array $bindings = [];
 
     /**
-     * @var array
+     * @var ResourceInterface[]
      */
     private array $resources = [];
 
@@ -69,7 +69,7 @@ class BindingCollection implements IteratorAggregate, Countable
     /**
      * Get all binding elements
      *
-     * @return array
+     * @return Binding[]
      */
     public function all(): array
     {
@@ -79,11 +79,11 @@ class BindingCollection implements IteratorAggregate, Countable
     /**
      * Get a binding element by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return null|Binding
      */
-    public function get($key): ?Binding
+    public function get(string $key): ?Binding
     {
         return $this->bindings[$key] ?? null;
     }
@@ -127,7 +127,7 @@ class BindingCollection implements IteratorAggregate, Countable
     /**
      * Returns an array of resources loaded to build this collection.
      *
-     * @return array
+     * @return ResourceInterface[]
      */
     public function getResources(): array
     {

@@ -4,9 +4,8 @@ namespace SOW\BindingBundle\Tests\Fixtures\__CG__\AnnotatedClasses;
 
 
 use Closure;
-use Doctrine\ORM\Proxy\Proxy;
-use SOW\BindingBundle\Annotation as Binding;
-use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject;
+use Doctrine\Persistence\Proxy;
+use SOW\BindingBundle\Attribute\Binding;
 
 /**
  * Class TestObject
@@ -15,105 +14,71 @@ use SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject;
  */
 class ProxyTestObject implements Proxy
 {
-    /**
-     * @var string
-     * @Binding\Binding(key="firstname")
-     */
-    private $firstname;
+     #[Binding(key: "firstname")]
+    private string $firstname;
 
     /**
-     * @var string
-     * @Binding\Binding(key="lastname", setter="setOtherName")
      */
-    private $lastname;
+     #[Binding(key: "lastname", setter: "setOtherName")]
+    private string $lastname;
 
     /**
-     * @var string
      * @Binding\Binding()
      */
-    private $userEmail;
+    #[Binding(key: "userEmail")]
+    private string $userEmail;
 
     /**
      * @var mixed
      */
-    private $notBindProperty;
+    private mixed $notBindProperty;
 
-    /**
-     * @var TestSubObject
-     * @Binding\Binding(type="SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject")
-     */
-    private $subObject;
+    #[Binding(key: "subObject", type: "SOW\BindingBundle\Tests\Fixtures\AnnotatedClasses\TestSubObject")]
+    private TestSubObject $subObject;
 
-    private $init = false;
+    private bool $init = false;
 
     /**
      * @return string
      */
-    public function getFirstname()
+    public function getFirstname(): string
     {
         return $this->firstname;
     }
 
-    /**
-     * @param string $firstname
-     */
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getLastname()
+    public function getLastname(): string
     {
         return $this->lastname;
     }
 
-    /**
-     * @param string $othername
-     */
     public function setOtherName(string $othername): self
     {
         $this->lastname = $othername;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getNotBindProperty()
+    public function getNotBindProperty(): string
     {
         return $this->notBindProperty;
     }
 
-    /**
-     * @param string $notBindProperty
-     */
-    public function setNotBindProperty($notBindProperty): self
+    public function setNotBindProperty(mixed $notBindProperty): self
     {
         $this->notBindProperty = $notBindProperty;
         return $this;
     }
 
-    /**
-     * Getter for userEmail
-     *
-     * @return string
-     */
-    public function getUserEmail()
+    public function getUserEmail(): string
     {
         return $this->userEmail;
     }
 
-    /**
-     * Setter for userEmail
-     *
-     * @param string $userEmail
-     *
-     * @return self
-     */
     public function setUserEmail(string $userEmail): self
     {
         $this->userEmail = $userEmail;
@@ -121,23 +86,11 @@ class ProxyTestObject implements Proxy
     }
 
 
-    /**
-     * Getter for subObject
-     *
-     * @return TestSubObject|null
-     */
     public function getSubObject(): ?TestSubObject
     {
         return $this->subObject;
     }
 
-    /**
-     * Setter for subObject
-     *
-     * @param TestSubObject $subObject
-     *
-     * @return self
-     */
     public function setSubObject(?TestSubObject $subObject): self
     {
         $this->subObject = $subObject;
@@ -148,10 +101,8 @@ class ProxyTestObject implements Proxy
      * Initializes this proxy if its not yet initialized.
      *
      * Acts as a no-op if already initialized.
-     *
-     * @return void
      */
-    public function __load()
+    public function __load(): void
     {
         $this->init = true;
     }
@@ -161,7 +112,7 @@ class ProxyTestObject implements Proxy
      *
      * @return bool
      */
-    public function __isInitialized()
+    public function __isInitialized(): bool
     {
         return $this->init;
     }

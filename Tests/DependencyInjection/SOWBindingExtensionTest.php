@@ -1,13 +1,9 @@
 <?php
-/**
- * @package  SOW\BindingBundle\Tests\DependencyInjection
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace SOW\BindingBundle\Tests\DependencyInjection;
 
+use Exception;
+use ReflectionClass;
 use SOW\BindingBundle\DependencyInjection\Configuration;
 use SOW\BindingBundle\DependencyInjection\SOWBindingExtension;
 use PHPUnit\Framework\TestCase;
@@ -21,22 +17,23 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
  */
 class SOWBindingExtensionTest extends TestCase
 {
-    public function testLoad()
+    public function testLoad(): void
     {
         try {
             $paramBag = $this->createMock(ParameterBagInterface::class);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             print_r($exception->getMessage());
-            self::fail('');
+            self::fail();
         }
+
         $container = $this->createMock(ContainerBuilder::class);
         $container->expects($this->once())
             ->method('getReflectionClass')
-            ->will($this->returnValue(new \ReflectionClass(Configuration::class)));
+            ->will($this->returnValue(new ReflectionClass(Configuration::class)));
         $container->expects($this->any())
             ->method('getParameterBag')
             ->will($this->returnValue($paramBag));
-        $container->expects($this->exactly(4))
+        $container->expects($this->exactly(3))
             ->method('setParameter')
             ->will($this->returnValue($paramBag));
         $container->expects($this->once())
@@ -44,6 +41,7 @@ class SOWBindingExtensionTest extends TestCase
             ->will($this->returnValue(true));
         $container->expects($this->once())
             ->method('setAlias');
+
         $extension = new SOWBindingExtension();
         $extension->load([], $container);
     }

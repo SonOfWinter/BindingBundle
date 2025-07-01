@@ -19,7 +19,7 @@ use SOW\BindingBundle\Attribute\Binding;
  */
 class BindingTest extends TestCase
 {
-    public function testValidNameSetterAndTypeParameters()
+    public function testValidNameSetterAndTypeParameters(): void
     {
         $binding = new Binding(
             key:    'test',
@@ -32,7 +32,7 @@ class BindingTest extends TestCase
         $this->assertEquals('string', $binding->getType());
     }
 
-    public function testValidNameAndSetterParameters()
+    public function testValidNameAndSetterParameters(): void
     {
         $binding = new Binding('test', 'getTest');
         $this->assertTrue($binding instanceof Binding);
@@ -41,7 +41,7 @@ class BindingTest extends TestCase
         $this->assertNull($binding->getType());
     }
 
-    public function testValidNameParameter()
+    public function testValidNameParameter(): void
     {
         $binding = new Binding('test');
         $this->assertTrue($binding instanceof Binding);
@@ -50,7 +50,7 @@ class BindingTest extends TestCase
         $this->assertNull($binding->getType());
     }
 
-    public function testValidMinMaxAndNullableParameters()
+    public function testValidMinMaxAndNullableParameters(): void
     {
         $binding = new Binding(
             key:      'test',

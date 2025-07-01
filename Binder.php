@@ -10,7 +10,7 @@
 namespace SOW\BindingBundle;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Error;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -22,7 +22,7 @@ use SOW\BindingBundle\Exception\BinderNullableException;
 use SOW\BindingBundle\Exception\BinderProxyClassException;
 use SOW\BindingBundle\Exception\BinderRecursiveException;
 use SOW\BindingBundle\Exception\BinderTypeException;
-use SOW\BindingBundle\Loader\AnnotationClassLoader;
+use SOW\BindingBundle\Utils\TypeUtils;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use TypeError;
 
@@ -33,7 +33,6 @@ use TypeError;
  */
 class Binder implements BinderInterface
 {
-    public const METHOD_ANNOTATION = "annotation";
     public const METHOD_ATTRIBUTE = "attribute";
 
     protected ?LoggerInterface $logger = null;
@@ -51,7 +50,6 @@ class Binder implements BinderInterface
     /**
      * Binder constructor.
      *
-     * @param LoaderInterface $annotationLoader
      * @param LoaderInterface $attributeLoader
      * @param EntityManagerInterface $em
      * @param int $bindingMaxRecursiveCalls
@@ -61,16 +59,13 @@ class Binder implements BinderInterface
      * @throws BinderConfigurationException
      */
     public function __construct(
-        LoaderInterface $annotationLoader,
         LoaderInterface $attributeLoader,
         EntityManagerInterface $em,
         int $bindingMaxRecursiveCalls,
         string $method,
         LoggerInterface $logger = null
     ) {
-        if ($method === self::METHOD_ANNOTATION) {
-            $this->loader = $annotationLoader;
-        } elseif ($method === self::METHOD_ATTRIBUTE) {
+        if ($method === self::METHOD_ATTRIBUTE) {
             $this->loader = $attributeLoader;
         } else {
             throw new BinderConfigurationException("Wrong binder method");
@@ -88,7 +83,7 @@ class Binder implements BinderInterface
      * @throws Exception
      * @return void
      */
-    public function setResource($resource)
+    public function setResource($resource): void
     {
         $this->resource = $resource;
         $this->loadCollection();
@@ -114,7 +109,7 @@ class Binder implements BinderInterface
      * @throws Exception
      * @return null|BindingCollection
      */
-    private function loadCollection()
+    private function loadCollection(): ?BindingCollection
     {
         $this->collection = $this->loader->load($this->resource, 'annotation');
         return $this->collection;
@@ -138,8 +133,12 @@ class Binder implements BinderInterface
      * @throws BinderNullableException
      * @return void
      */
-    public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
-    {
+    public function bind(
+        &$object,
+        array $params = [],
+        array $include = [],
+        array $exclude = []
+    ): void {
         $this->checkResource($object);
         $includeCount = count($include);
         $includeIntersect = count(array_intersect($include, array_keys($params)));
@@ -151,35 +150,41 @@ class Binder implements BinderInterface
         foreach ($collection as $binding) {
             $getter = $binding->getGetter();
             $setter = $binding->getSetter();
-            if (AnnotationClassLoader::isNotScalar($binding->getType())) {
+            if (TypeUtils::isNotScalar($binding->getType())) {
                 $subObject = $object->$getter();
                 // if sub-object not yet created, try create it with empty constructor
                 if (empty($subObject)) {
                     try {
                         $type = $binding->getType();
                         $subObject = new $type();
-                    } catch (TypeError $te) {
+                    } catch (TypeError $typeError) {
                         if ($this->logger !== null) {
-                            $this->logger->error($te->getMessage());
+                            $this->logger->error($typeError->getMessage());
                         } else {
-                            error_log($te->getMessage());
+                            error_log($typeError->getMessage());
                         }
-                    } catch (Error $e) {
+                    } catch (Error $exception) {
                         if ($this->logger !== null) {
-                            $this->logger->error(get_class($e));
-                            $this->logger->error($te->getMessage());
+                            $this->logger->error(get_class($exception));
+                            $this->logger->error($exception->getMessage());
                         } else {
-                            error_log(get_class($e));
-                            error_log($e->getMessage());
+                            error_log(get_class($exception));
+                            error_log($exception->getMessage());
                         }
                     }
                 }
                 if (!empty($subObject) && array_key_exists($binding->getKey(), $params)) {
                     // get real object and replace proxy
                     if ($subObject instanceof Proxy) {
-                        $realClassName = $this->em->getClassMetadata(get_class($subObject))->rootEntityName;
-                        $subObject = $this->em->find($realClassName, $subObject->getId());
-                        if ($subObject === null) {
+                        $realClassName = $this->em->getClassMetadata(
+                            get_class($subObject)
+                        )->rootEntityName;
+                        if (method_exists($subObject, 'getId')) {
+                            $subObject = $this->em->find($realClassName, $subObject->getId());
+                            if ($subObject === null) {
+                                throw new BinderProxyClassException();
+                            }
+                        } else {
                             throw new BinderProxyClassException();
                         }
                     }
@@ -246,9 +251,10 @@ class Binder implements BinderInterface
      * @param $object
      *
      * @throws BinderProxyClassException
+     * @throws Exception
      * @return void
      */
-    protected function checkResource($object)
+    protected function checkResource($object): void
     {
         if ($this->resource !== get_class($object)) {
             if ($object instanceof Proxy) {
@@ -274,7 +280,7 @@ class Binder implements BinderInterface
     {
         $valueType = gettype($value);
         $annotType = $binding->getType();
-        if (AnnotationClassLoader::isScalar($annotType) && $valueType !== $annotType && $value !== null) {
+        if (TypeUtils::isScalar($annotType) && $valueType !== $annotType && $value !== null) {
             if ($annotType === 'float' && $valueType === 'double') {
                 return floatval($value);
             }
@@ -293,7 +299,7 @@ class Binder implements BinderInterface
      * @throws BinderMinValueException
      * @return void
      */
-    protected function checkMinValue($key, $value, $min)
+    protected function checkMinValue($key, $value, $min): void
     {
         if (is_string($value)) {
             if (strlen($value) < $min) {
@@ -320,7 +326,7 @@ class Binder implements BinderInterface
      * @throws BinderMaxValueException
      * @return void
      */
-    protected function checkMaxValue($key, $value, $max)
+    protected function checkMaxValue($key, $value, $max): void
     {
         if (is_string($value)) {
             if (strlen($value) > $max) {
@@ -346,7 +352,7 @@ class Binder implements BinderInterface
      * @throws BinderNullableException
      * @return void
      */
-    protected function checkNullValue($key, $value)
+    protected function checkNullValue($key, $value): void
     {
         if ($value === null) {
             throw new BinderNullableException($key);

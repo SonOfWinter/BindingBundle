@@ -37,7 +37,12 @@ interface BinderInterface
      * @throws BinderException
      * @return void
      */
-    public function bind(&$object, array $params = [], array $include = [], array $exclude = []);
+    public function bind(
+        &$object,
+        array $params = [],
+        array $include = [],
+        array $exclude = []
+    ): void;
 
     /**
      * getKeys

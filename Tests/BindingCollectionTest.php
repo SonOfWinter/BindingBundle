@@ -119,7 +119,7 @@ class BindingCollectionTest extends TestCase
         );
         $collection->addResource(
             $r1 = new FileResource(
-                __DIR__ . '/Fixtures/AnnotatedClasses/AbstractClass.php'
+                __DIR__ . '/Fixtures/AttributedClasses/AbstractClass.php'
             )
         );
         $collection1 = new BindingCollection();
@@ -137,7 +137,7 @@ class BindingCollectionTest extends TestCase
         );
         $collection1->addResource(
             $r2 = new FileResource(
-                __DIR__ . '/Fixtures/AnnotatedClasses/TestObject.php'
+                __DIR__ . '/Fixtures/AttributedClasses/TestObject.php'
             )
         );
         $collection2 = new BindingCollection();
@@ -182,17 +182,17 @@ class BindingCollectionTest extends TestCase
         );
         $collection->addResource(
             $r1 = new FileResource(
-                __DIR__ . '/Fixtures/AnnotatedClasses/AbstractClass.php'
+                __DIR__ . '/Fixtures/AttributedClasses/AbstractClass.php'
             )
         );
         $collection->addResource(
             $r2 = new FileResource(
-                __DIR__ . '/Fixtures/AnnotatedClasses/TestObject.php'
+                __DIR__ . '/Fixtures/AttributedClasses/TestObject.php'
             )
         );
         $collection->addResource(
             new FileResource(
-                __DIR__ . '/Fixtures/AnnotatedClasses/AbstractClass.php'
+                __DIR__ . '/Fixtures/AttributedClasses/AbstractClass.php'
             )
         );
         $this->assertSame(

@@ -1,11 +1,4 @@
 <?php
-/**
- * Bundle Extension class
- *
- * @package  SOW\BindingBundle\DependencyInjection
- * @author   Thomas LEDUC <thomaslmoi15@hotmail.fr>
- * @link     https://github.com/SonOfWinter/BindingBundle
- */
 
 namespace SOW\BindingBundle\DependencyInjection;
 
@@ -35,7 +28,7 @@ class SOWBindingExtension extends Extension
      * @throws LogicException
      * @return void
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
         $this->processConfiguration($configuration, $configs);
