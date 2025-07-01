@@ -27,9 +27,12 @@
     "require": {
         "php": ">=8.2",
         "symfony/framework-bundle": "^7.0",
-        "symfony/orm-pack": "*",
         "symfony/dependency-injection": "^7.0",
-        "symfony/yaml": "^7.0"
+        "symfony/yaml": "^7.0",
+        "doctrine/dbal": "^3",
+        "doctrine/doctrine-bundle": "^2.15",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/orm": "^3.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
