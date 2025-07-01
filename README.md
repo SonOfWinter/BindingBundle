@@ -1,6 +1,13 @@
-Installation
-============
+# BindingBundle
 
+This bundle provides a binding mechanism from array to Entity with Symfony.
+
+## Requirements
+
+- PHP 8.2 or higher
+- Symfony 7.0 or higher
+
+## Installation
 
 Open a command console, enter your project directory and execute:
 
@@ -8,206 +15,99 @@ Open a command console, enter your project directory and execute:
 $ composer require sonofwinter/binding-bundle
 ```
 
-Usage
-=====
-
-Define binding properties in your entity
-
-For v0.3.0 and above
---------------------
+Register the bundle in your `config/bundles.php` file:
 
 ```php
-    /**
-     * @var string
-     * @Binding(key="firstname")
-     */
-    private $firstname;
-
-    /**
-     * @var string
-     * @Binding(key="lastname", setter="setOtherName")
-     */
-    private $lastname;
-
-    /**
-     * @var integer
-     * @Binding(key="age", type="integer")
-     */
-    private $age;
-
-    /**
-     * @var string
-     * @Binding()
-     */
-    private $userEmail;
-```
-
-For v0.2.0 and below
---------------------
-
-```php
-    /**
-     * @var string
-     * @Binding(name="firstname")
-     */
-    private $firstname;
-
-    /**
-     * @var string
-     * @Binding(name="lastname", setter="setOtherName")
-     */
-    private $lastname;
-
-    /**
-     * @var integer
-     * @Binding(name="age", type="integer")
-     */
-    private $age;
-
-    /** 
-     * @var string
-     * @Binding(name="userEmail")
-     */
-    private $userEmail;
-```
-
----
-
-You must defined the key|name property. It's the array value's key.
-
-The setter property is used if you want to use another setter.
-
-The type property is used if you want to make a type check.
-A BinderTypeException is throws if the type doens't correspond.
-
-Use Binder service for bind an array to entity
-
-```php
-    public function __construct(BinderInterface $binder)
-    {
-        $this->binder = $binder;
-    }
-
-    function bind(BindableEntity $be, array $data): BindableEntity
-    {
-        // $data = ['lastname' => 'Doe', 'firstname' => 'John', 'age' => 20, 'userEmail' => 'some.email@mail.com'];
-        $this->binder->bind($be, $data);
-        return $be;
-    }
-```
-
-New in v0.4 inclusion and exclusion
------------------------------------
-
-```php
-    public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
-```
-
-$include is a key array required in $params, if one or more keys are missing, an exception is thrown
-
-$exclude is a key array ignored in $params. No exception was thrown is a key is present.
-
-new in v0.5 min and max
------------------------
-
-```php
-    /**
-     * @var integer
-     * @Binding(key="age", type="integer", min=0, max=100)
-     */
-    private $age;
-```
-
-The min and max value check if the value is in range defined by the two properties.
-
-If not, a specific exception was thrown
-
-Works with number (int/float), string (length) and array (count)
-
-new in v0.6 child binder
-------------------------
-
-```php
-    /** 
-     * @var Test
-     * @Binding(type="App\Entity\Test")
-     */
-    private $test;
-```
-
-A child entity can be binding when the type is set with the entity namespace.
-
-The getter is use to get the sub entity.
-If the sub entity is null, it try to create him (without parameter), if fail the binder skip sub entity.
-So if the constructor need parameters, the sub entity must be defined before the binder action. 
-
-Exemple of data :
- 
-```php
-$data = [
-    'lastname' => 'Doe', 
-    'firstname' => 'John', 
-    'age' => 20, 
-    'userEmail' => 'some.email@mail.com',
-    'test' => [
-        'testProps1' => 'value',
-        'testProps2' => 'value'
-    ]
+return [
+    // ...
+    SOW\BindingBundle\SOWBindingBundle::class => ['all' => true],
 ];
 ```
 
-new in v0.7 Nullable
-------------------------
+## Configuration
 
-```php
-    /** 
-     * @var Test
-     * @Binding(nullable=true)
-     */
-    private $test;
-```
-
-The nullable property define if a null value can be set to entity's property.
-The property default value is false. 
-
-V0.7.1 update
--------------
-
-Update Symfony minimum version 4.0 -> 4.1
-
-
-V0.8.0 update
--------------
-
-Update Symfony minimum version 4.1 -> 4.3 || 5.0
-
-v0.9.0 update
--------------
-
-Adds attributes and increases minimum versions : 
-- Symfony minimum version 5.0
-- PHP minimum version 8.0
-
-So now, you can use attribute instead of annotation.
-
-```php
-    #[Binding(key: "lastname", setter: "setLastname", type: "string", min: 2, max: 255)]
-    private string $lastname = '';
-```
-
-You have to add this configuration to use it :
+Configure the bundle in your `config/packages/sow_binding.yaml` file:
 
 ```yaml
-    sow_binding.binding_method: attribute
+# Default configuration
+sow_binding:
+    # Use attribute binding method (required for PHP 8+)
+    binding_method: attribute
+
+    # Optional: Override the default attribute class
+    # attribute_class_name: 'SOW\BindingBundle\Attribute\Binding'
 ```
 
-You can also override Binder attribute with this configuration :
+## Usage
 
-```yaml
-    sow_binding.attribute_class_name: 'SOW\BindingBundle\Attribute\Binding'
+### Define binding properties in your entity
+
+```php
+#[Binding(key: "lastname", setter: "setLastname", type: "string", min: 2, max: 255)]
+private string $lastname = '';
+
+#[Binding(key: "firstname")]
+private string $firstname = '';
+
+#[Binding(key: "age", type: "integer", min: 0, max: 120)]
+private int $age = 0;
+
+#[Binding(key: "user_email", )]
+private string $userEmail = '';
+
+#[Binding(key: "test", type: "App\Entity\Test", nullable: true)]
+private ?Test $test = null;
 ```
 
-v1.0.0 update
--------------
+### Binding options
 
-Remove annotation support, only attributes are supported now.
+- `key`: The array value's key (required)
+- `setter`: Used if you want to use another setter method name
+- `type`: Used for type checking. A BinderTypeException is thrown if the type doesn't match
+- `min`/`max`: Check if the value is in the defined range (works with numbers, string length, and array count)
+- `nullable`: Defines if a null value can be set to the entity's property (default: false)
+
+### Use Binder service to bind an array to an entity
+
+```php
+public function __construct(BinderInterface $binder)
+{
+    $this->binder = $binder;
+}
+
+function bind(BindableEntity $be, array $data): BindableEntity
+{
+    // Example data
+    // $data = [
+    //     'lastname' => 'Doe', 
+    //     'firstname' => 'John', 
+    //     'age' => 20, 
+    //     'userEmail' => 'some.email@mail.com',
+    //     'test' => [
+    //         'testProps1' => 'value',
+    //         'testProps2' => 'value'
+    //     ]
+    // ];
+
+    $this->binder->bind($be, $data);
+    // Or with include/exclude options:
+    // $this->binder->bind($be, $data, ['firstname', 'lastname'], ['age']);
+
+    return $be;
+}
+```
+
+### Advanced binding options
+
+You can use include/exclude arrays to control which properties are bound:
+
+```php
+public function bind(&$object, array $params = [], array $include = [], array $exclude = [])
+```
+
+- `$include`: A key array required in `$params`. If one or more keys are missing, an exception is thrown
+- `$exclude`: A key array ignored in `$params`. No exception is thrown if a key is present
+
+## Changelog
+
+For version history and detailed changes, see the [changelog](./changelog) directory.
